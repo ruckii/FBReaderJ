@@ -28,6 +28,10 @@ import org.geometerplus.fbreader.library.*;
 import org.geometerplus.android.fbreader.library.SQLiteBooksDatabase;
 
 public class LibraryService extends Service implements Library.ChangeListener {
+	private final class LibraryImplementation extends LibraryInterface.Stub {
+	}
+
+	private final LibraryImplementation myImplementation = new LibraryImplementation();
 	private BooksDatabase myDatabase;
 	private Library myLibrary;
 
@@ -46,7 +50,7 @@ public class LibraryService extends Service implements Library.ChangeListener {
 	@Override
 	public IBinder onBind(Intent intent) {
 		System.err.println("LibraryService binded for intent " + intent);
-		return null;
+		return myImplementation;
 	}
 
 	@Override
