@@ -39,7 +39,7 @@ import org.geometerplus.fbreader.tree.FBTree;
 import org.geometerplus.android.util.UIUtil;
 import org.geometerplus.android.fbreader.FBReader;
 import org.geometerplus.android.fbreader.tree.TreeActivity;
-import org.geometerplus.android.fbreader.libraryService.LibraryService;
+import org.geometerplus.android.fbreader.libraryService.*;
 
 public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItemClickListener, View.OnCreateContextMenuListener, ServiceConnection, Library.ChangeListener {
 	static volatile boolean ourToBeKilled = false;
@@ -47,7 +47,7 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 	public static final String SELECTED_BOOK_PATH_KEY = "SelectedBookPath";
 
 	private BooksDatabase myDatabase;
-	private Library myLibrary;
+	private AbstractLibrary myLibrary;
 
 	private Book mySelectedBook;
 
@@ -191,7 +191,7 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 		} else {
 			menu.add(0, ADD_TO_FAVORITES_ITEM_ID, 0, resource.getResource("addToFavorites").getValue());
 		}
-		if ((myLibrary.getRemoveBookMode(book) & Library.REMOVE_FROM_DISK) != 0) {
+		if (myLibrary.canRemoveBookFile(book)) {
 			menu.add(0, DELETE_BOOK_ITEM_ID, 0, resource.getResource("deleteBook").getValue());
 		}
 	}
@@ -329,7 +329,8 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 
 	// method from ServiceConnection interface
 	public void onServiceConnected(ComponentName name, IBinder service) {
-		System.err.println("onServiceConnected " + name);
+		final LibraryInterface iface = LibraryInterface.Stub.asInterface(service);
+		System.err.println("onServiceConnected " + name + " : " + iface);
 	}
 
 	// method from ServiceConnection interface

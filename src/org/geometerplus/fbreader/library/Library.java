@@ -32,7 +32,7 @@ import org.geometerplus.fbreader.formats.FormatPlugin;
 import org.geometerplus.fbreader.formats.PluginCollection;
 import org.geometerplus.fbreader.Paths;
 
-public final class Library implements ILibrary {
+public final class Library extends AbstractLibrary {
 	public static final String ROOT_FOUND = "found";
 	public static final String ROOT_FAVORITES = "favorites";
 	public static final String ROOT_RECENT = "recent";
@@ -43,7 +43,7 @@ public final class Library implements ILibrary {
 	public static final String ROOT_FILE_TREE = "fileTree";
 
 	private static Library ourInstance;
-	public static Library Instance() {
+	public static AbstractLibrary Instance() {
 		if (ourInstance == null) {
 			ourInstance = new Library();
 		}
@@ -57,8 +57,6 @@ public final class Library implements ILibrary {
 	private final List<Book> myBooks = Collections.synchronizedList(new LinkedList<Book>());
 	private final RootTree myRootTree = new RootTree(this);
 	private boolean myDoGroupTitlesByFirstLetter;
-
-	private final List<ChangeListener> myListeners = Collections.synchronizedList(new LinkedList<ChangeListener>());
 
 	private final static int STATUS_LOADING = 1;
 	private final static int STATUS_SEARCHING = 2;
@@ -84,14 +82,6 @@ public final class Library implements ILibrary {
 
 	private FirstLevelTree getFirstLevelTree(String key) {
 		return (FirstLevelTree)myRootTree.getSubTree(key);
-	}
-
-	public void addChangeListener(ChangeListener listener) {
-		myListeners.add(listener);
-	}
-
-	public void removeChangeListener(ChangeListener listener) {
-		myListeners.remove(listener);
 	}
 
 	public LibraryTree getLibraryTree(LibraryTree.Key key) {
@@ -249,14 +239,6 @@ public final class Library implements ILibrary {
 			(SearchResultsTree)getFirstLevelTree(ROOT_FOUND);
 		if (found != null && book.matches(found.getPattern())) {
 			found.getBookSubTree(book, true);
-		}
-	}
-
-	private void fireModelChangedEvent(ChangeListener.Code code) {
-		synchronized (myListeners) {
-			for (ChangeListener l : myListeners) {
-				l.onLibraryChanged(code);
-			}
 		}
 	}
 
@@ -446,6 +428,7 @@ public final class Library implements ILibrary {
 		builder.start();
 	}
 
+	@Override
 	public boolean isUpToDate() {
 		return myStatusMask == 0;
 	}
@@ -460,6 +443,7 @@ public final class Library implements ILibrary {
 		return recentIds.size() > 1 ? Book.getById(recentIds.get(1)) : null;
 	}
 
+	@Override
 	public void startBookSearch(final String pattern) {
 		setStatus(myStatusMask | STATUS_SEARCHING);
 		final Thread searcher = new Thread("Library.searchBooks") {
@@ -526,6 +510,7 @@ public final class Library implements ILibrary {
 		db.saveRecentBookIds(ids);
 	}
 
+	@Override
 	public boolean isBookInFavorites(Book book) {
 		if (book == null) {
 			return false;
@@ -539,6 +524,7 @@ public final class Library implements ILibrary {
 		return false;
 	}
 
+	@Override
 	public void addBookToFavorites(Book book) {
 		if (isBookInFavorites(book)) {
 			return;
@@ -548,6 +534,7 @@ public final class Library implements ILibrary {
 		BooksDatabase.Instance().addToFavorites(book.getId());
 	}
 
+	@Override
 	public void removeBookFromFavorites(Book book) {
 		if (getFirstLevelTree(ROOT_FAVORITES).removeBook(book, false)) {
 			BooksDatabase.Instance().removeFromFavorites(book.getId());
@@ -555,16 +542,7 @@ public final class Library implements ILibrary {
 		}
 	}
 
-	public static final int REMOVE_DONT_REMOVE = 0x00;
-	public static final int REMOVE_FROM_LIBRARY = 0x01;
-	public static final int REMOVE_FROM_DISK = 0x02;
-	public static final int REMOVE_FROM_LIBRARY_AND_DISK = REMOVE_FROM_LIBRARY | REMOVE_FROM_DISK;
-
-	public int getRemoveBookMode(Book book) {
-		return canDeleteBookFile(book) ? REMOVE_FROM_DISK : REMOVE_DONT_REMOVE;
-	}
-
-	private boolean canDeleteBookFile(Book book) {
+	public boolean canRemoveBookFile(Book book) {
 		ZLFile file = book.File;
 		if (file.getPhysicalFile() == null) {
 			return false;
@@ -578,6 +556,7 @@ public final class Library implements ILibrary {
 		return true;
 	}
 
+	@Override
 	public void removeBook(Book book, int removeMode) {
 		if (removeMode == REMOVE_DONT_REMOVE) {
 			return;
