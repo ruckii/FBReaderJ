@@ -32,19 +32,7 @@ import org.geometerplus.fbreader.formats.FormatPlugin;
 import org.geometerplus.fbreader.formats.PluginCollection;
 import org.geometerplus.fbreader.Paths;
 
-public final class Library {
-	public interface ChangeListener {
-		public enum Code {
-			BookAdded,
-			BookRemoved,
-			StatusChanged,
-			Found,
-			NotFound
-		}
-
-		void onLibraryChanged(Code code);
-	}
-
+public final class Library implements ILibrary {
 	public static final String ROOT_FOUND = "found";
 	public static final String ROOT_FAVORITES = "favorites";
 	public static final String ROOT_RECENT = "recent";
