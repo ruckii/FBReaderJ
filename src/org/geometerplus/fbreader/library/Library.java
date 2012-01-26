@@ -542,6 +542,7 @@ public final class Library extends AbstractLibrary {
 		}
 	}
 
+	@Override
 	public boolean canRemoveBookFile(Book book) {
 		ZLFile file = book.File;
 		if (file.getPhysicalFile() == null) {
