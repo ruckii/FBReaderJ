@@ -28,10 +28,13 @@ import org.geometerplus.fbreader.library.*;
 import org.geometerplus.android.fbreader.library.SQLiteBooksDatabase;
 
 public class LibraryService extends Service implements Library.ChangeListener {
-	private final class LibraryImplementation extends LibraryInterface.Stub {
+	public final class LibraryImplementation extends LibraryInterface.Stub {
+		public boolean isUpToDate() {
+			return myLibrary.isUpToDate();
+		}
 	}
 
-	private final LibraryImplementation myImplementation = new LibraryImplementation();
+	private LibraryImplementation myImplementation;
 	private BooksDatabase myDatabase;
 	private Library myLibrary;
 
@@ -66,6 +69,7 @@ public class LibraryService extends Service implements Library.ChangeListener {
 			myLibrary.addChangeListener(this);
 			myLibrary.startBuild();
 		}
+		myImplementation = new LibraryImplementation();
 	}
 
 	@Override

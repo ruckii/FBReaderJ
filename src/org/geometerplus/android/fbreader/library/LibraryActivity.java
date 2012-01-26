@@ -20,10 +20,10 @@
 package org.geometerplus.android.fbreader.library;
 
 import android.app.AlertDialog;
-import android.content.Intent;
-import android.content.DialogInterface;
+import android.content.*;
 import android.view.*;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -39,8 +39,9 @@ import org.geometerplus.fbreader.tree.FBTree;
 import org.geometerplus.android.util.UIUtil;
 import org.geometerplus.android.fbreader.FBReader;
 import org.geometerplus.android.fbreader.tree.TreeActivity;
+import org.geometerplus.android.fbreader.libraryService.LibraryService;
 
-public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItemClickListener, View.OnCreateContextMenuListener, Library.ChangeListener {
+public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItemClickListener, View.OnCreateContextMenuListener, ServiceConnection, Library.ChangeListener {
 	static volatile boolean ourToBeKilled = false;
 
 	public static final String SELECTED_BOOK_PATH_KEY = "SelectedBookPath";
@@ -53,6 +54,8 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
+
+		bindService(new Intent(this, LibraryService.class), this, LibraryService.BIND_AUTO_CREATE);
 
 		myDatabase = SQLiteBooksDatabase.Instance();
 		if (myDatabase == null) {
@@ -322,5 +325,15 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 				}
 			}
 		});
+	}
+
+	// method from ServiceConnection interface
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		System.err.println("onServiceConnected " + name);
+	}
+
+	// method from ServiceConnection interface
+	public void onServiceDisconnected(ComponentName name) {
+		System.err.println("onServiceDisconnected " + name);
 	}
 }
