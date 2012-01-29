@@ -112,6 +112,8 @@ public final class FBReader extends ZLAndroidActivity {
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
+		DictionaryUtil.init(this);
+
 		final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
 		final ZLAndroidLibrary zlibrary = (ZLAndroidLibrary)ZLibrary.Instance();
 		myShowStatusBarFlag = zlibrary.ShowStatusBarOption.getValue();
@@ -229,8 +231,8 @@ public final class FBReader extends ZLAndroidActivity {
 
 		final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
 		final RelativeLayout root = (RelativeLayout)findViewById(R.id.root_view);
-		((PopupPanel)fbReader.getPopupById(TextSearchPopup.ID)).createControlPanel(this, root, PopupWindow.Type.Bottom);
-		((PopupPanel)fbReader.getPopupById(SelectionPopup.ID)).createControlPanel(this, root, PopupWindow.Type.Floating);
+		((PopupPanel)fbReader.getPopupById(TextSearchPopup.ID)).setPanelInfo(this, root);
+		((PopupPanel)fbReader.getPopupById(SelectionPopup.ID)).setPanelInfo(this, root);
 
 		synchronized (myPluginActions) {
 			if (!myPluginActions.isEmpty()) {
@@ -253,19 +255,33 @@ public final class FBReader extends ZLAndroidActivity {
 			null
 		);
 
-		final TipsManager manager = TipsManager.Instance();
-		switch (manager.requiredAction()) {
-			case Initialize:
-				startActivity(new Intent(TipsActivity.INITIALIZE_ACTION, null, this, TipsActivity.class));
-				break;
-			case Show:
-				startActivity(new Intent(TipsActivity.SHOW_TIP_ACTION, null, this, TipsActivity.class));
-				break;
-			case Download:
-				manager.startDownloading();
-				break;
-			case None:
-				break;
+		new TipRunner().start();
+	}
+
+	private class TipRunner extends Thread {
+		TipRunner() {
+			setPriority(MIN_PRIORITY);
+		}
+
+		public void run() {
+			final TipsManager manager = TipsManager.Instance();
+			switch (manager.requiredAction()) {
+				case Initialize:
+					startActivity(new Intent(
+						TipsActivity.INITIALIZE_ACTION, null, FBReader.this, TipsActivity.class
+					));
+					break;
+				case Show:
+					startActivity(new Intent(
+						TipsActivity.SHOW_TIP_ACTION, null, FBReader.this, TipsActivity.class
+					));
+					break;
+				case Download:
+					manager.startDownloading();
+					break;
+				case None:
+					break;
+			}
 		}
 	}
 
@@ -291,11 +307,11 @@ public final class FBReader extends ZLAndroidActivity {
 	}
 
 	@Override
-	protected FBReaderApp createApplication(ZLFile file) {
+	protected FBReaderApp createApplication() {
 		if (SQLiteBooksDatabase.Instance() == null) {
 			new SQLiteBooksDatabase(this, "READER");
 		}
-		return new FBReaderApp(file != null ? file.getPath() : null);
+		return new FBReaderApp();
 	}
 
 	@Override
@@ -414,7 +430,7 @@ public final class FBReader extends ZLAndroidActivity {
 		}
 
 		final ZLAndroidApplication application = (ZLAndroidApplication)getApplication();
-		application.myMainWindow.refreshMenu();
+		application.myMainWindow.refresh();
 
 		return true;
 	}
@@ -452,6 +468,13 @@ public final class FBReader extends ZLAndroidActivity {
 			fbreader.hideActivePopup();
 			myNavigationPopup = new NavigationPopup(fbreader);
 			myNavigationPopup.runNavigation(this, root);
+		}
+	}
+
+	@Override
+	public void refresh() {
+		if (myNavigationPopup != null) {
+			myNavigationPopup.update();
 		}
 	}
 
