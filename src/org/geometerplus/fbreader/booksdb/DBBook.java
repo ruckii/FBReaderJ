@@ -21,6 +21,7 @@ package org.geometerplus.fbreader.booksdb;
 
 import java.util.*;
 
+import org.geometerplus.zlibrary.core.util.ZLMiscUtil;
 import org.geometerplus.zlibrary.core.filesystem.*;
 
 import org.geometerplus.fbreader.library.*;
@@ -110,6 +111,11 @@ public class DBBook extends Book {
 		myId = -1;
 	}
 
+	@Override
+	public long getId() {
+		return myId;
+	}
+
 	private void loadLists() {
 		final BooksDatabase database = BooksDatabase.Instance();
 		myAuthors = database.loadAuthors(myId);
@@ -157,6 +163,39 @@ public class DBBook extends Book {
 		return true;
 	}
 
+	@Override
+	public String getTitle() {
+		return myTitle;
+	}
+
+	@Override
+	public void setTitle(String title) {
+		if (!ZLMiscUtil.equals(myTitle, title)) {
+			myTitle = title;
+			myIsSaved = false;
+		}
+	}
+
+	@Override
+	public List<Author> authors() {
+		return (myAuthors != null) ? Collections.unmodifiableList(myAuthors) : Collections.<Author>emptyList();
+	}
+
+	@Override
+	protected void addAuthor(Author author) {
+		if (author == null) {
+			return;
+		}
+		if (myAuthors == null) {
+			myAuthors = new ArrayList<Author>();
+			myAuthors.add(author);
+			myIsSaved = false;
+		} else if (!myAuthors.contains(author)) {
+			myAuthors.add(author);
+			myIsSaved = false;
+		}
+	}
+
 	void addAuthorWithNoCheck(Author author) {
 		if (myAuthors == null) {
 			myAuthors = new ArrayList<Author>();
@@ -164,8 +203,47 @@ public class DBBook extends Book {
 		myAuthors.add(author);
 	}
 
+	@Override
+	public SeriesInfo getSeriesInfo() {
+		return mySeriesInfo;
+	}
+
+	@Override
+	public void setSeriesInfo(String name, float index) {
+		if (mySeriesInfo == null) {
+			if (name != null) {
+				mySeriesInfo = new SeriesInfo(name, index);
+				myIsSaved = false;
+			}
+		} else if (name == null) {
+			mySeriesInfo = null;
+			myIsSaved = false;
+		} else if (!name.equals(mySeriesInfo.Name) || mySeriesInfo.Index != index) {
+			mySeriesInfo = new SeriesInfo(name, index);
+			myIsSaved = false;
+		}
+	}
+
 	void setSeriesInfoWithNoCheck(String name, float index) {
 		mySeriesInfo = new SeriesInfo(name, index);
+	}
+
+	@Override
+	public List<Tag> tags() {
+		return (myTags != null) ? Collections.unmodifiableList(myTags) : Collections.<Tag>emptyList();
+	}
+
+	@Override
+	public void addTag(Tag tag) {
+		if (tag != null) {
+			if (myTags == null) {
+				myTags = new ArrayList<Tag>();
+			}
+			if (!myTags.contains(tag)) {
+				myTags.add(tag);
+				myIsSaved = false;
+			}
+		}
 	}
 
 	void addTagWithNoCheck(Tag tag) {

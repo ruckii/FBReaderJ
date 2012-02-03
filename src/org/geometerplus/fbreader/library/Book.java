@@ -58,23 +58,13 @@ public abstract class Book {
 
 	protected abstract boolean readMetaInfo();
 
-	public List<Author> authors() {
-		return (myAuthors != null) ? Collections.unmodifiableList(myAuthors) : Collections.<Author>emptyList();
-	}
+	public abstract long getId();
 
-	private void addAuthor(Author author) {
-		if (author == null) {
-			return;
-		}
-		if (myAuthors == null) {
-			myAuthors = new ArrayList<Author>();
-			myAuthors.add(author);
-			myIsSaved = false;
-		} else if (!myAuthors.contains(author)) {
-			myAuthors.add(author);
-			myIsSaved = false;
-		}
-	}
+	public abstract String getTitle();
+	public abstract void setTitle(String title);
+
+	public abstract List<Author> authors();
+	protected abstract void addAuthor(Author author);
 
 	public void addAuthor(String name) {
 		addAuthor(name, "");
@@ -105,39 +95,8 @@ public abstract class Book {
 		addAuthor(new Author(strippedName, strippedKey));
 	}
 
-	public long getId() {
-		return myId;
-	}
-
-	public String getTitle() {
-		return myTitle;
-	}
-
-	public void setTitle(String title) {
-		if (!ZLMiscUtil.equals(myTitle, title)) {
-			myTitle = title;
-			myIsSaved = false;
-		}
-	}
-
-	public SeriesInfo getSeriesInfo() {
-		return mySeriesInfo;
-	}
-
-	public void setSeriesInfo(String name, float index) {
-		if (mySeriesInfo == null) {
-			if (name != null) {
-				mySeriesInfo = new SeriesInfo(name, index);
-				myIsSaved = false;
-			}
-		} else if (name == null) {
-			mySeriesInfo = null;
-			myIsSaved = false;
-		} else if (!name.equals(mySeriesInfo.Name) || mySeriesInfo.Index != index) {
-			mySeriesInfo = new SeriesInfo(name, index);
-			myIsSaved = false;
-		}
-	}
+	public abstract SeriesInfo getSeriesInfo();
+	public abstract void setSeriesInfo(String name, float index);
 
 	public String getLanguage() {
 		return myLanguage;
@@ -161,31 +120,20 @@ public abstract class Book {
 		}
 	}
 
-	public List<Tag> tags() {
-		return (myTags != null) ? Collections.unmodifiableList(myTags) : Collections.<Tag>emptyList();
-	}
-
-	public void addTag(Tag tag) {
-		if (tag != null) {
-			if (myTags == null) {
-				myTags = new ArrayList<Tag>();
-			}
-			if (!myTags.contains(tag)) {
-				myTags.add(tag);
-				myIsSaved = false;
-			}
-		}
-	}
+	public abstract List<Tag> tags();
+	public abstract void addTag(Tag tag);
 
 	public void addTag(String tagName) {
 		addTag(Tag.getTag(null, tagName));
 	}
 
 	boolean matches(String pattern) {
-		if (myTitle != null && ZLMiscUtil.matchesIgnoreCase(myTitle, pattern)) {
+		final String title = getTitle();
+		if (title != null && ZLMiscUtil.matchesIgnoreCase(title, pattern)) {
 			return true;
 		}
-		if (mySeriesInfo != null && ZLMiscUtil.matchesIgnoreCase(mySeriesInfo.Name, pattern)) {
+		final SeriesInfo series = getSeriesInfo();
+		if (series != null && ZLMiscUtil.matchesIgnoreCase(series.Name, pattern)) {
 			return true;
 		}
 		for (Author a : authors()) {
@@ -193,11 +141,9 @@ public abstract class Book {
 				return true;
 			}
 		}
-		if (myTags != null) {
-			for (Tag tag : myTags) {
-				if (ZLMiscUtil.matchesIgnoreCase(tag.Name, pattern)) {
-					return true;
-				}
+		for (Tag t : tags()) {
+			if (ZLMiscUtil.matchesIgnoreCase(t.Name, pattern)) {
+				return true;
 			}
 		}
 		if (ZLMiscUtil.matchesIgnoreCase(File.getLongName(), pattern)) {
@@ -282,7 +228,7 @@ public abstract class Book {
 
 	@Override
 	public int hashCode() {
-		return (int)myId;
+		return File.hashCode();
 	}
 
 	@Override

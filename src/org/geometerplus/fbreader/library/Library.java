@@ -28,7 +28,7 @@ import org.geometerplus.fbreader.tree.FBTree;
 import org.geometerplus.fbreader.Paths;
 import org.geometerplus.fbreader.booksdb.*;
 
-public final class Library extends AbstractLibrary {
+public abstract class Library extends AbstractLibrary {
 	public static final String ROOT_FOUND = "found";
 	public static final String ROOT_FAVORITES = "favorites";
 	public static final String ROOT_RECENT = "recent";
@@ -37,16 +37,6 @@ public final class Library extends AbstractLibrary {
 	public static final String ROOT_BY_SERIES = "bySeries";
 	public static final String ROOT_BY_TAG = "byTag";
 	public static final String ROOT_FILE_TREE = "fileTree";
-
-	private static Library ourInstance;
-	public static Library Instance() {
-		if (ourInstance == null) {
-			ourInstance = new Library(BooksDatabase.Instance());
-		}
-		return ourInstance;
-	}
-
-	private final BooksDatabase myDatabase;
 
 	private final List<Book> myBooks = Collections.synchronizedList(new LinkedList<Book>());
 	private final RootTree myRootTree = new RootTree();
@@ -61,9 +51,7 @@ public final class Library extends AbstractLibrary {
 		fireModelChangedEvent(ChangeListener.Code.StatusChanged);
 	}
 
-	public Library(BooksDatabase db) {
-		myDatabase = db;
-
+	protected Library() {
 		new FavoritesTree(myRootTree, ROOT_FAVORITES);
 		new FirstLevelTree(myRootTree, ROOT_RECENT);
 		new FirstLevelTree(myRootTree, ROOT_BY_AUTHOR);
@@ -91,7 +79,7 @@ public final class Library extends AbstractLibrary {
 		return parentTree != null ? (LibraryTree)parentTree.getSubTree(key.Id) : null;
 	}
 
-	public static ZLResourceFile getHelpFile() {
+	private ZLResourceFile getHelpFile() {
 		final Locale locale = Locale.getDefault();
 
 		ZLResourceFile file = ZLResourceFile.createResourceFile(
@@ -109,6 +97,14 @@ public final class Library extends AbstractLibrary {
 		}
 
 		return ZLResourceFile.createResourceFile("data/help/MiniHelp.en.fb2");
+	}
+
+	public Book getBookByFile(ZLFile file) {
+		return DBBook.getByFile(file);
+	}
+
+	public Book getHelpBook() {
+		return getBookByFile(getHelpFile());
 	}
 
 	private void collectBooks(
@@ -429,18 +425,6 @@ public final class Library extends AbstractLibrary {
 	}
 
 	@Override
-	public Book getRecentBook() {
-		List<Long> recentIds = myDatabase.loadRecentBookIds();
-		return recentIds.size() > 0 ? Book.getById(recentIds.get(0)) : null;
-	}
-
-	@Override
-	public Book getPreviousBook() {
-		List<Long> recentIds = myDatabase.loadRecentBookIds();
-		return recentIds.size() > 1 ? Book.getById(recentIds.get(1)) : null;
-	}
-
-	@Override
 	public void startBookSearch(final String pattern) {
 		setStatus(myStatusMask | STATUS_SEARCHING);
 		final Thread searcher = new Thread("Library.searchBooks") {
@@ -493,18 +477,6 @@ public final class Library extends AbstractLibrary {
 		if (newSearchResults == null) {
 			fireModelChangedEvent(ChangeListener.Code.NotFound);
 		}
-	}
-
-	@Override
-	public void addBookToRecentList(Book book) {
-		final List<Long> ids = myDatabase.loadRecentBookIds();
-		final Long bookId = book.getId();
-		ids.remove(bookId);
-		ids.add(0, bookId);
-		if (ids.size() > 12) {
-			ids.remove(12);
-		}
-		myDatabase.saveRecentBookIds(ids);
 	}
 
 	@Override

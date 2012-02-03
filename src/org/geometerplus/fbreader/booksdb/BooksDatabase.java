@@ -43,22 +43,22 @@ public abstract class BooksDatabase {
 		return createBook(id, infos.getFile(fileId), title, encoding, language);
 	}
 	protected DBBook createBook(long id, ZLFile file, String title, String encoding, String language) {
-		return (file != null) ? new Book(id, file, title, encoding, language) : null;
+		return (file != null) ? new DBBook(id, file, title, encoding, language) : null;
 	}
-	protected void addAuthor(Book book, Author author) {
+	protected void addAuthor(DBBook book, Author author) {
 		book.addAuthorWithNoCheck(author);
 	}
-	protected void addTag(Book book, Tag tag) {
+	protected void addTag(DBBook book, Tag tag) {
 		book.addTagWithNoCheck(tag);
 	}
-	protected void setSeriesInfo(Book book, String series, float index) {
+	protected void setSeriesInfo(DBBook book, String series, float index) {
 		book.setSeriesInfoWithNoCheck(series, index);
 	}
 
 	protected abstract void executeAsATransaction(Runnable actions);
 
 	// returns map fileId -> book
-	protected abstract Map<Long,Book> loadBooks(FileInfoSet infos, boolean existing);
+	protected abstract Map<Long,DBBook> loadBooks(FileInfoSet infos, boolean existing);
 	protected abstract void setExistingFlag(Collection<Book> books, boolean flag);
 	protected abstract DBBook loadBook(long bookId);
 	protected abstract void reloadBook(Book book);
