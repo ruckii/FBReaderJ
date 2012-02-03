@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import org.geometerplus.fbreader.library.*;
+import org.geometerplus.fbreader.booksdb.BooksDatabase;
 
 import org.geometerplus.android.fbreader.library.SQLiteBooksDatabase;
 

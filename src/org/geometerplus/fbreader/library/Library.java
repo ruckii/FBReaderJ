@@ -26,6 +26,7 @@ import org.geometerplus.zlibrary.core.filesystem.*;
 
 import org.geometerplus.fbreader.tree.FBTree;
 import org.geometerplus.fbreader.Paths;
+import org.geometerplus.fbreader.booksdb.*;
 
 public final class Library extends AbstractLibrary {
 	public static final String ROOT_FOUND = "found";

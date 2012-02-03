@@ -17,13 +17,15 @@
  * 02110-1301, USA.
  */
 
-package org.geometerplus.fbreader.library;
+package org.geometerplus.fbreader.booksdb;
 
 import java.util.*;
 
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 
 import org.geometerplus.zlibrary.text.view.ZLTextPosition;
+
+import org.geometerplus.fbreader.library.*;
 
 public abstract class BooksDatabase {
 	private static BooksDatabase ourInstance;
@@ -36,11 +38,11 @@ public abstract class BooksDatabase {
 		ourInstance = this;
 	}
 
-	protected Book createBook(long id, long fileId, String title, String encoding, String language) {
+	protected DBBook createBook(long id, long fileId, String title, String encoding, String language) {
 		final FileInfoSet infos = new FileInfoSet(fileId);
 		return createBook(id, infos.getFile(fileId), title, encoding, language);
 	}
-	protected Book createBook(long id, ZLFile file, String title, String encoding, String language) {
+	protected DBBook createBook(long id, ZLFile file, String title, String encoding, String language) {
 		return (file != null) ? new Book(id, file, title, encoding, language) : null;
 	}
 	protected void addAuthor(Book book, Author author) {
@@ -58,9 +60,9 @@ public abstract class BooksDatabase {
 	// returns map fileId -> book
 	protected abstract Map<Long,Book> loadBooks(FileInfoSet infos, boolean existing);
 	protected abstract void setExistingFlag(Collection<Book> books, boolean flag);
-	protected abstract Book loadBook(long bookId);
+	protected abstract DBBook loadBook(long bookId);
 	protected abstract void reloadBook(Book book);
-	protected abstract Book loadBookByFile(long fileId, ZLFile file);
+	protected abstract DBBook loadBookByFile(long fileId, ZLFile file);
 
 	protected abstract List<Author> loadAuthors(long bookId);
 	protected abstract List<Tag> loadTags(long bookId);

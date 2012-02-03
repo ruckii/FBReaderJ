@@ -35,6 +35,7 @@ import org.geometerplus.zlibrary.text.view.ZLTextPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextFixedPosition;
 
 import org.geometerplus.fbreader.library.*;
+import org.geometerplus.fbreader.booksdb.*;
 
 import org.geometerplus.android.util.UIUtil;
 import org.geometerplus.android.util.SQLiteUtil;
@@ -126,8 +127,8 @@ public final class SQLiteBooksDatabase extends BooksDatabase {
 	}
 
 	@Override
-	protected Book loadBook(long bookId) {
-		Book book = null;
+	protected DBBook loadBook(long bookId) {
+		DBBook book = null;
 		final Cursor cursor = myDatabase.rawQuery("SELECT file_id,title,encoding,language FROM Books WHERE book_id = " + bookId, null);
 		if (cursor.moveToNext()) {
 			book = createBook(
@@ -149,11 +150,11 @@ public final class SQLiteBooksDatabase extends BooksDatabase {
 		cursor.close();
 	}
 
-	protected Book loadBookByFile(long fileId, ZLFile file) {
+	protected DBBook loadBookByFile(long fileId, ZLFile file) {
 		if (fileId == -1) {
 			return null;
 		}
-		Book book = null;
+		DBBook book = null;
 		final Cursor cursor = myDatabase.rawQuery("SELECT book_id,title,encoding,language FROM Books WHERE file_id = " + fileId, null);
 		if (cursor.moveToNext()) {
 			book = createBook(
