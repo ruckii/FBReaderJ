@@ -23,23 +23,19 @@ import java.util.*;
 
 import org.geometerplus.zlibrary.text.view.*;
 
-public final class Bookmark extends ZLTextFixedPosition {
+public abstract class Bookmark extends ZLTextFixedPosition {
 	public final static int CREATION = 0;
 	public final static int MODIFICATION = 1;
 	public final static int ACCESS = 2;
 	public final static int LATEST = 3;
 
-	public static List<Bookmark> bookmarks() {
-		return BooksDatabase.Instance().loadAllVisibleBookmarks();
+	public static class ByTimeComparator implements Comparator<Bookmark> {
+		public int compare(Bookmark bm0, Bookmark bm1) {
+			return bm1.getTime(LATEST).compareTo(bm0.getTime(LATEST));
+		}
 	}
 
-	public static List<Bookmark> invisibleBookmarks(Book book) {
-		final List<Bookmark> list = BooksDatabase.Instance().loadBookmarks(book.getId(), false);
-		Collections.sort(list, new ByTimeComparator());
-		return list;
-	}
-
-	private long myId;
+	protected long myId;
 	private final long myBookId;
 	private final String myBookTitle;
 	private String myText;
@@ -52,9 +48,9 @@ public final class Bookmark extends ZLTextFixedPosition {
 	public final String ModelId;
 	public final boolean IsVisible;
 
-	private boolean myIsChanged;
+	protected boolean myIsChanged;
 
-	Bookmark(long id, long bookId, String bookTitle, String text, Date creationDate, Date modificationDate, Date accessDate, int accessCount, String modelId, int paragraphIndex, int elementIndex, int charIndex, boolean isVisible) {
+	protected Bookmark(long id, long bookId, String bookTitle, String text, Date creationDate, Date modificationDate, Date accessDate, int accessCount, String modelId, int paragraphIndex, int elementIndex, int charIndex, boolean isVisible) {
 		super(paragraphIndex, elementIndex, charIndex);
 
 		myId = id;
@@ -143,24 +139,8 @@ public final class Bookmark extends ZLTextFixedPosition {
 		myIsChanged = true;
 	}
 
-	public void save() {
-		if (myIsChanged) {
-			myId = BooksDatabase.Instance().saveBookmark(this);
-			myIsChanged = false;
-		}
-	}
-
-	public void delete() {
-		if (myId != -1) {
-			BooksDatabase.Instance().deleteBookmark(this);
-		}
-	}
-
-	public static class ByTimeComparator implements Comparator<Bookmark> {
-		public int compare(Bookmark bm0, Bookmark bm1) {
-			return bm1.getTime(LATEST).compareTo(bm0.getTime(LATEST));
-		}
-	}
+	public abstract void save();
+	public abstract void delete();
 
 	private static String createBookmarkText(ZLTextWordCursor cursor, int maxWords) {
 		cursor = new ZLTextWordCursor(cursor);

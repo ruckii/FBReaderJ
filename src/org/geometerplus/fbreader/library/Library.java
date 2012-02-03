@@ -545,4 +545,7 @@ public abstract class Library extends AbstractLibrary {
 			book.File.getPhysicalFile().delete();
 		}
 	}
+
+	public abstract List<Bookmark> allBookmarks();
+	public abstract List<Bookmark> invisibleBookmarks(Book book);
 }

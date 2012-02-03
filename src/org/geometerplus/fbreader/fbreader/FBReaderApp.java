@@ -35,6 +35,7 @@ import org.geometerplus.fbreader.bookmodel.BookModel;
 import org.geometerplus.fbreader.bookmodel.TOCTree;
 import org.geometerplus.fbreader.library.*;
 import org.geometerplus.fbreader.booksdb.DBLibrary;
+import org.geometerplus.fbreader.booksdb.DBBookmark;
 
 public final class FBReaderApp extends ZLApplication {
 	public final ZLBooleanOption AllowScreenBrightnessAdjustmentOption =
@@ -343,7 +344,7 @@ public final class FBReaderApp extends ZLApplication {
 		}
 		if (ShowPositionsInCancelMenuOption.getValue()) {
 			if (Model != null && Model.Book != null) {
-				for (Bookmark bookmark : Bookmark.invisibleBookmarks(Model.Book)) {
+				for (Bookmark bookmark : DBLibrary.Instance().invisibleBookmarks(Model.Book)) {
 					myCancelActionsList.add(new BookmarkDescription(bookmark));
 				}
 			}
@@ -379,13 +380,13 @@ public final class FBReaderApp extends ZLApplication {
 
 	private synchronized void updateInvisibleBookmarksList(Bookmark b) {
 		if (Model != null && Model.Book != null && b != null) {
-			for (Bookmark bm : Bookmark.invisibleBookmarks(Model.Book)) {
+			for (Bookmark bm : DBLibrary.Instance().invisibleBookmarks(Model.Book)) {
 				if (b.equals(bm)) {
 					bm.delete();
 				}
 			}
 			b.save();
-			final List<Bookmark> bookmarks = Bookmark.invisibleBookmarks(Model.Book);
+			final List<Bookmark> bookmarks = DBLibrary.Instance().invisibleBookmarks(Model.Book);
 			for (int i = 3; i < bookmarks.size(); ++i) {
 				bookmarks.get(i).delete();
 			}
@@ -394,7 +395,7 @@ public final class FBReaderApp extends ZLApplication {
 
 	public void addInvisibleBookmark(ZLTextWordCursor cursor) {
 		if (cursor != null && Model != null && Model.Book != null && getTextView() == BookTextView) {
-			updateInvisibleBookmarksList(new Bookmark(
+			updateInvisibleBookmarksList(new DBBookmark(
 				Model.Book,
 				getTextView().getModel().getId(),
 				cursor,
@@ -418,7 +419,7 @@ public final class FBReaderApp extends ZLApplication {
 			return null;
 		}
 
-		return new Bookmark(
+		return new DBBookmark(
 			Model.Book,
 			view.getModel().getId(),
 			cursor,
