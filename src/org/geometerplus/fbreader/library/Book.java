@@ -36,8 +36,6 @@ import org.geometerplus.fbreader.formats.*;
 
 import org.geometerplus.fbreader.Paths;
 
-import org.geometerplus.fbreader.booksdb.*;
-
 public abstract class Book {
 	public final ZLFile File;
 
@@ -98,27 +96,10 @@ public abstract class Book {
 	public abstract SeriesInfo getSeriesInfo();
 	public abstract void setSeriesInfo(String name, float index);
 
-	public String getLanguage() {
-		return myLanguage;
-	}
-
-	public void setLanguage(String language) {
-		if (!ZLMiscUtil.equals(myLanguage, language)) {
-			myLanguage = language;
-			myIsSaved = false;
-		}
-	}
-
-	public String getEncoding() {
-		return myEncoding;
-	}
-
-	public void setEncoding(String encoding) {
-		if (!ZLMiscUtil.equals(myEncoding, encoding)) {
-			myEncoding = encoding;
-			myIsSaved = false;
-		}
-	}
+	public abstract String getLanguage();
+	public abstract void setLanguage(String language);
+	public abstract String getEncoding();
+	public abstract void setEncoding(String encoding);
 
 	public abstract List<Tag> tags();
 	public abstract void addTag(Tag tag);
@@ -154,24 +135,13 @@ public abstract class Book {
 
 	public abstract boolean save();
 
-	public ZLTextPosition getStoredPosition() {
-		return BooksDatabase.Instance().getStoredPosition(myId);
-	}
-
-	public void storePosition(ZLTextPosition position) {
-		if (myId != -1) {
-			BooksDatabase.Instance().storePosition(myId, position);
-		}
-	}
+	public abstract ZLTextPosition getStoredPosition();
+	public abstract void storePosition(ZLTextPosition position);
 
 	public abstract boolean isHyperlinkVisited(String linkId);
 	public abstract void markHyperlinkAsVisited(String linkId);
 
-	public void insertIntoBookList() {
-		if (myId != -1) {
-			BooksDatabase.Instance().insertIntoBookList(myId);
-		}
-	}
+	public abstract void insertIntoBookList();
 
 	public String getContentHashCode() {
 		InputStream stream = null;

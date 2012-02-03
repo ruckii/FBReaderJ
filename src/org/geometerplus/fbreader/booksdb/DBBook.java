@@ -24,6 +24,8 @@ import java.util.*;
 import org.geometerplus.zlibrary.core.util.ZLMiscUtil;
 import org.geometerplus.zlibrary.core.filesystem.*;
 
+import org.geometerplus.zlibrary.text.view.ZLTextPosition;
+
 import org.geometerplus.fbreader.library.*;
 import org.geometerplus.fbreader.formats.*;
 import org.geometerplus.fbreader.Paths;
@@ -204,6 +206,32 @@ public class DBBook extends Book {
 	}
 
 	@Override
+	public String getLanguage() {
+		return myLanguage;
+	}
+
+	@Override
+	public void setLanguage(String language) {
+		if (!ZLMiscUtil.equals(myLanguage, language)) {
+			myLanguage = language;
+			myIsSaved = false;
+		}
+	}
+
+	@Override
+	public String getEncoding() {
+		return myEncoding;
+	}
+
+	@Override
+	public void setEncoding(String encoding) {
+		if (!ZLMiscUtil.equals(myEncoding, encoding)) {
+			myEncoding = encoding;
+			myIsSaved = false;
+		}
+	}
+
+	@Override
 	public SeriesInfo getSeriesInfo() {
 		return mySeriesInfo;
 	}
@@ -286,6 +314,18 @@ public class DBBook extends Book {
 		return true;
 	}
 
+	@Override
+	public ZLTextPosition getStoredPosition() {
+		return BooksDatabase.Instance().getStoredPosition(myId);
+	}
+
+	@Override
+	public void storePosition(ZLTextPosition position) {
+		if (myId != -1) {
+			BooksDatabase.Instance().storePosition(myId, position);
+		}
+	}
+
 	private Set<String> myVisitedHyperlinks;
 	private void initHyperlinkSet() {
 		if (myVisitedHyperlinks == null) {
@@ -310,6 +350,13 @@ public class DBBook extends Book {
 			if (myId != -1) {
 				BooksDatabase.Instance().addVisitedHyperlink(myId, linkId);
 			}
+		}
+	}
+
+	@Override
+	public void insertIntoBookList() {
+		if (myId != -1) {
+			BooksDatabase.Instance().insertIntoBookList(myId);
 		}
 	}
 

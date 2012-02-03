@@ -35,13 +35,18 @@ import org.geometerplus.zlibrary.ui.android.R;
 
 import org.geometerplus.fbreader.fbreader.FBReaderApp;
 import org.geometerplus.fbreader.library.*;
+import org.geometerplus.fbreader.booksdb.BooksDatabase;
+import org.geometerplus.fbreader.booksdb.DBLibrary;
 
 import org.geometerplus.android.util.UIUtil;
+import org.geometerplus.android.fbreader.library.SQLiteBooksDatabase;
 
 public class BookmarksActivity extends TabActivity implements MenuItem.OnMenuItemClickListener {
 	private static final int OPEN_ITEM_ID = 0;
 	private static final int EDIT_ITEM_ID = 1;
 	private static final int DELETE_ITEM_ID = 2;
+
+	private Library myLibrary;
 
 	List<Bookmark> AllBooksBookmarks;
 	private final List<Bookmark> myThisBookBookmarks = new LinkedList<Bookmark>();
@@ -68,6 +73,15 @@ public class BookmarksActivity extends TabActivity implements MenuItem.OnMenuIte
 
 		Thread.setDefaultUncaughtExceptionHandler(new org.geometerplus.zlibrary.ui.android.library.UncaughtExceptionHandler(this));
 
+		BooksDatabase db = SQLiteBooksDatabase.Instance();
+		if (db == null) {
+			db = new SQLiteBooksDatabase(this, "BOOKMARKS");
+		}
+		if (myLibrary == null) {
+			myLibrary = new DBLibrary(db);
+			myLibrary.startBuild();
+		}
+
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
 
@@ -77,7 +91,7 @@ public class BookmarksActivity extends TabActivity implements MenuItem.OnMenuIte
 		final TabHost host = getTabHost();
 		LayoutInflater.from(this).inflate(R.layout.bookmarks, host.getTabContentView(), true);
 
-		AllBooksBookmarks = Bookmark.bookmarks();
+		AllBooksBookmarks = myLibrary.allBookmarks();
 		Collections.sort(AllBooksBookmarks, new Bookmark.ByTimeComparator());
 		final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
 
@@ -221,8 +235,8 @@ public class BookmarksActivity extends TabActivity implements MenuItem.OnMenuIte
 		bookmark.onOpen();
 		final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
 		final long bookId = bookmark.getBookId();
-		if ((fbreader.Model == null) || (fbreader.Model.Book.getId() != bookId)) {
-			final Book book = Book.getById(bookId);
+		if (fbreader.Model == null || fbreader.Model.Book.getId() != bookId) {
+			final Book book = myLibrary.getBookById(bookId);
 			if (book != null) {
 				finish();
 				fbreader.openBook(book, bookmark);

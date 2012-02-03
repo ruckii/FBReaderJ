@@ -103,6 +103,10 @@ public abstract class Library extends AbstractLibrary {
 		return DBBook.getByFile(file);
 	}
 
+	public Book getBookById(long id) {
+		return DBBook.getById(id);
+	}
+
 	public Book getHelpBook() {
 		return getBookByFile(getHelpFile());
 	}
