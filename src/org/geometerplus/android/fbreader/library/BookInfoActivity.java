@@ -46,6 +46,7 @@ import org.geometerplus.zlibrary.ui.android.image.ZLAndroidImageData;
 import org.geometerplus.zlibrary.ui.android.image.ZLAndroidImageManager;
 
 import org.geometerplus.fbreader.library.*;
+import org.geometerplus.fbreader.booksdb.*;
 import org.geometerplus.fbreader.network.HtmlUtil;
 
 import org.geometerplus.android.fbreader.FBReader;
@@ -56,6 +57,8 @@ public class BookInfoActivity extends Activity implements MenuItem.OnMenuItemCli
 
 	public static final String CURRENT_BOOK_PATH_KEY = "CurrentBookPath";
 	public static final String FROM_READING_MODE_KEY = "fromReadingMode";
+
+	private Library myLibrary;
 
 	private final ZLResource myResource = ZLResource.resource("bookInfo");
 	private ZLFile myFile;
@@ -73,9 +76,11 @@ public class BookInfoActivity extends Activity implements MenuItem.OnMenuItemCli
 		myDontReloadBook = intent.getBooleanExtra(FROM_READING_MODE_KEY, false);
 		myFile = ZLFile.createFileByPath(path);
 
-		if (SQLiteBooksDatabase.Instance() == null) {
-			new SQLiteBooksDatabase(this, "LIBRARY");
+		BooksDatabase db = SQLiteBooksDatabase.Instance();
+		if (db == null) {
+			db = new SQLiteBooksDatabase(this, "LIBRARY");
 		}
+		myLibrary = DBLibrary.Instance();
 
 		final ActionBar bar = getActionBar();
 		if (bar != null) {
@@ -90,7 +95,7 @@ public class BookInfoActivity extends Activity implements MenuItem.OnMenuItemCli
 	protected void onStart() {
 		super.onStart();
 
-		final Book book = Book.getByFile(myFile);
+		final Book book = myLibrary.getBookByFile(myFile);
 
 		if (book != null) {
 			setupCover(book);
@@ -106,7 +111,7 @@ public class BookInfoActivity extends Activity implements MenuItem.OnMenuItemCli
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		final Book book = Book.getByFile(myFile);
+		final Book book = myLibrary.getBookByFile(myFile);
 		if (book != null) {
 			setupBookInfo(book);
 			myDontReloadBook = false;
@@ -322,7 +327,7 @@ public class BookInfoActivity extends Activity implements MenuItem.OnMenuItemCli
 				return true;
 			case RELOAD_INFO:
 			{
-				final Book book = Book.getByFile(myFile);
+				final Book book = myLibrary.getBookByFile(myFile);
 				if (book != null) {
 					book.reloadInfoFromFile();
 					setupBookInfo(book);

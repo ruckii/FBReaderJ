@@ -24,6 +24,7 @@ import org.geometerplus.zlibrary.core.resources.ZLResource;
 import org.geometerplus.fbreader.library.Bookmark;
 import org.geometerplus.fbreader.fbreader.FBReaderApp;
 import org.geometerplus.fbreader.fbreader.FBView;
+import org.geometerplus.fbreader.booksdb.DBBookmark;
 
 import org.geometerplus.android.util.UIUtil;
 
@@ -37,7 +38,7 @@ public class SelectionBookmarkAction extends FBAndroidAction {
 		final FBView fbview = Reader.getTextView();
 		final String text = fbview.getSelectedText();
 
-		new Bookmark(
+		new DBBookmark(
 			Reader.Model.Book,
 			fbview.getModel().getId(),
 			fbview.getSelectionStartPosition(), 

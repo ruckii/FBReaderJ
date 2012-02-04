@@ -34,6 +34,8 @@ import org.geometerplus.zlibrary.core.resources.ZLResource;
 import org.geometerplus.zlibrary.ui.android.R;
 
 import org.geometerplus.fbreader.library.*;
+import org.geometerplus.fbreader.booksdb.BooksDatabase;
+import org.geometerplus.fbreader.booksdb.DBLibrary;
 import org.geometerplus.fbreader.tree.FBTree;
 
 import org.geometerplus.android.util.UIUtil;
@@ -46,7 +48,6 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 
 	public static final String SELECTED_BOOK_PATH_KEY = "SelectedBookPath";
 
-	private BooksDatabase myDatabase;
 	private Library myLibrary;
 
 	private Book mySelectedBook;
@@ -57,22 +58,19 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 
 		bindService(new Intent(this, LibraryService.class), this, LibraryService.BIND_AUTO_CREATE);
 
-		myDatabase = SQLiteBooksDatabase.Instance();
-		if (myDatabase == null) {
-			myDatabase = new SQLiteBooksDatabase(this, "LIBRARY");
+		BooksDatabase db = SQLiteBooksDatabase.Instance();
+		if (db == null) {
+			db = new SQLiteBooksDatabase(this, "LIBRARY");
 		}
-		if (myLibrary == null) {
-			myLibrary = (Library)Library.Instance();
-			myLibrary.addChangeListener(this);
-			myLibrary.startBuild();
-		}
+		myLibrary = DBLibrary.Instance();
+		myLibrary.addChangeListener(this);
 
 		final String selectedBookPath = getIntent().getStringExtra(SELECTED_BOOK_PATH_KEY);
 		mySelectedBook = null;
 		if (selectedBookPath != null) {
 			final ZLFile file = ZLFile.createFileByPath(selectedBookPath);
 			if (file != null) {
-				mySelectedBook = Book.getByFile(file);
+				mySelectedBook = myLibrary.getBookByFile(file);
 			}
 		}
 
@@ -136,7 +134,7 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 	protected void onActivityResult(int requestCode, int returnCode, Intent intent) {
 		if (requestCode == BOOK_INFO_REQUEST && intent != null) {
 			final String path = intent.getStringExtra(BookInfoActivity.CURRENT_BOOK_PATH_KEY);
-			final Book book = Book.getByFile(ZLFile.createFileByPath(path));
+			final Book book = myLibrary.getBookByFile(ZLFile.createFileByPath(path));
 			myLibrary.refreshBookInfo(book);
 			getListView().invalidateViews();
 		} else {

@@ -26,7 +26,7 @@ import android.os.Bundle;
 
 import org.geometerplus.zlibrary.core.options.ZLStringOption;
 
-import org.geometerplus.fbreader.library.Library;
+import org.geometerplus.fbreader.booksdb.DBLibrary;
 
 public class LibrarySearchActivity extends Activity {
 	@Override
@@ -38,7 +38,7 @@ public class LibrarySearchActivity extends Activity {
 			final String pattern = intent.getStringExtra(SearchManager.QUERY);
 			if (pattern != null && pattern.length() > 0) {
 				LibraryActivity.BookSearchPatternOption.setValue(pattern);
-				Library.Instance().startBookSearch(pattern);
+				DBLibrary.Instance().startBookSearch(pattern);
 			}
 		}
 		finish();

@@ -17,13 +17,15 @@
  * 02110-1301, USA.
  */
 
-package org.geometerplus.fbreader.library;
+package org.geometerplus.fbreader.booksdb;
 
 import java.util.*;
 
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 
 import org.geometerplus.zlibrary.text.view.ZLTextPosition;
+
+import org.geometerplus.fbreader.library.*;
 
 public abstract class BooksDatabase {
 	private static BooksDatabase ourInstance;
@@ -36,31 +38,31 @@ public abstract class BooksDatabase {
 		ourInstance = this;
 	}
 
-	protected Book createBook(long id, long fileId, String title, String encoding, String language) {
+	protected DBBook createBook(long id, long fileId, String title, String encoding, String language) {
 		final FileInfoSet infos = new FileInfoSet(fileId);
 		return createBook(id, infos.getFile(fileId), title, encoding, language);
 	}
-	protected Book createBook(long id, ZLFile file, String title, String encoding, String language) {
-		return (file != null) ? new Book(id, file, title, encoding, language) : null;
+	protected DBBook createBook(long id, ZLFile file, String title, String encoding, String language) {
+		return (file != null) ? new DBBook(id, file, title, encoding, language) : null;
 	}
-	protected void addAuthor(Book book, Author author) {
+	protected void addAuthor(DBBook book, Author author) {
 		book.addAuthorWithNoCheck(author);
 	}
-	protected void addTag(Book book, Tag tag) {
+	protected void addTag(DBBook book, Tag tag) {
 		book.addTagWithNoCheck(tag);
 	}
-	protected void setSeriesInfo(Book book, String series, float index) {
+	protected void setSeriesInfo(DBBook book, String series, float index) {
 		book.setSeriesInfoWithNoCheck(series, index);
 	}
 
 	protected abstract void executeAsATransaction(Runnable actions);
 
 	// returns map fileId -> book
-	protected abstract Map<Long,Book> loadBooks(FileInfoSet infos, boolean existing);
-	protected abstract void setExistingFlag(Collection<Book> books, boolean flag);
-	protected abstract Book loadBook(long bookId);
-	protected abstract void reloadBook(Book book);
-	protected abstract Book loadBookByFile(long fileId, ZLFile file);
+	protected abstract Map<Long,DBBook> loadBooks(FileInfoSet infos, boolean existing);
+	protected abstract void setExistingFlag(Collection<DBBook> books, boolean flag);
+	protected abstract DBBook loadBook(long bookId);
+	protected abstract void reloadBook(DBBook book);
+	protected abstract DBBook loadBookByFile(long fileId, ZLFile file);
 
 	protected abstract List<Author> loadAuthors(long bookId);
 	protected abstract List<Tag> loadTags(long bookId);
@@ -91,7 +93,7 @@ public abstract class BooksDatabase {
 	protected abstract void removeFromFavorites(long bookId);
 
 	protected Bookmark createBookmark(long id, long bookId, String bookTitle, String text, Date creationDate, Date modificationDate, Date accessDate, int accessCounter, String modelId, int paragraphIndex, int wordIndex, int charIndex, boolean isVisible) {
-		return new Bookmark(id, bookId, bookTitle, text, creationDate, modificationDate, accessDate, accessCounter, modelId, paragraphIndex, wordIndex, charIndex, isVisible);
+		return new DBBookmark(id, bookId, bookTitle, text, creationDate, modificationDate, accessDate, accessCounter, modelId, paragraphIndex, wordIndex, charIndex, isVisible);
 	}
 
 	protected abstract List<Bookmark> loadBookmarks(long bookId, boolean isVisible);

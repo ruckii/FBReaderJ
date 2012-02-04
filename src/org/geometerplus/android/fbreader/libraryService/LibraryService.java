@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import org.geometerplus.fbreader.library.*;
+import org.geometerplus.fbreader.booksdb.*;
 
 import org.geometerplus.android.fbreader.library.SQLiteBooksDatabase;
 
@@ -36,8 +37,8 @@ public class LibraryService extends Service implements Library.ChangeListener {
 			if (database == null) {
 				database = new SQLiteBooksDatabase(LibraryService.this, "LIBRARY SERVICE");
 			}
-			myBaseLibrary = new Library(database);
-			((Library)myBaseLibrary).startBuild();
+			//myBaseLibrary = new DBLibrary(database);
+			myBaseLibrary = DBLibrary.Instance();
 		}
 
 		public boolean isUpToDate() {
