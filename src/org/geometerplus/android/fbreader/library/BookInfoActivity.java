@@ -45,6 +45,7 @@ import org.geometerplus.zlibrary.ui.android.image.ZLAndroidImageData;
 import org.geometerplus.zlibrary.ui.android.image.ZLAndroidImageManager;
 
 import org.geometerplus.fbreader.library.*;
+import org.geometerplus.fbreader.booksdb.*;
 import org.geometerplus.fbreader.network.HtmlUtil;
 
 import org.geometerplus.android.fbreader.FBReader;
@@ -55,6 +56,8 @@ public class BookInfoActivity extends Activity {
 
 	public static final String CURRENT_BOOK_PATH_KEY = "CurrentBookPath";
 	public static final String FROM_READING_MODE_KEY = "fromReadingMode";
+
+	private Library myLibrary;
 
 	private final ZLResource myResource = ZLResource.resource("bookInfo");
 	private ZLFile myFile;
@@ -71,8 +74,13 @@ public class BookInfoActivity extends Activity {
 		myDontReloadBook = getIntent().getBooleanExtra(FROM_READING_MODE_KEY, false);
 		myFile = ZLFile.createFileByPath(path);
 
-		if (SQLiteBooksDatabase.Instance() == null) {
-			new SQLiteBooksDatabase(this, "LIBRARY");
+		BooksDatabase db = SQLiteBooksDatabase.Instance();
+		if (db == null) {
+			db = new SQLiteBooksDatabase(this, "LIBRARY");
+		}
+		myLibrary = DBLibrary.Instance();
+		if (myLibrary == null) {
+			myLibrary = new DBLibrary(db);
 		}
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -85,7 +93,7 @@ public class BookInfoActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 
-		final Book book = Book.getByFile(myFile);
+		final Book book = myLibrary.getBookByFile(myFile);
 
 		if (book != null) {
 			setupCover(book);
@@ -134,7 +142,7 @@ public class BookInfoActivity extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		final Book book = Book.getByFile(myFile);
+		final Book book = myLibrary.getBookByFile(myFile);
 		if (book != null) {
 			setupBookInfo(book);
 			myDontReloadBook = false;
