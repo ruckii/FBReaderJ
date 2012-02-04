@@ -140,7 +140,7 @@ public final class SQLiteBooksDatabase extends BooksDatabase {
 	}
 
 	@Override
-	protected void reloadBook(Book book) {
+	protected void reloadBook(DBBook book) {
 		final Cursor cursor = myDatabase.rawQuery("SELECT title,encoding,language FROM Books WHERE book_id = " + book.getId(), null);
 		if (cursor.moveToNext()) {
 			book.setTitle(cursor.getString(0));
@@ -267,7 +267,7 @@ public final class SQLiteBooksDatabase extends BooksDatabase {
 	}
 
 	@Override
-	protected void setExistingFlag(Collection<Book> books, boolean flag) {
+	protected void setExistingFlag(Collection<DBBook> books, boolean flag) {
 		if (books.isEmpty()) {
 			return;
 		}

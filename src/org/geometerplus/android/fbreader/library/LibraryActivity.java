@@ -58,11 +58,8 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 		if (db == null) {
 			db = new SQLiteBooksDatabase(this, "LIBRARY");
 		}
-		if (myLibrary == null) {
-			myLibrary = new DBLibrary(db);
-			myLibrary.addChangeListener(this);
-			myLibrary.startBuild();
-		}
+		myLibrary = DBLibrary.Instance();
+		myLibrary.addChangeListener(this);
 
 		final String selectedBookPath = getIntent().getStringExtra(SELECTED_BOOK_PATH_KEY);
 		mySelectedBook = null;

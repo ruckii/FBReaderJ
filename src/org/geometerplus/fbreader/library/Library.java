@@ -25,7 +25,6 @@ import java.util.*;
 import org.geometerplus.zlibrary.core.filesystem.*;
 
 import org.geometerplus.fbreader.tree.FBTree;
-import org.geometerplus.fbreader.Paths;
 import org.geometerplus.fbreader.booksdb.*;
 
 public abstract class Library extends AbstractLibrary {
@@ -42,13 +41,22 @@ public abstract class Library extends AbstractLibrary {
 	private final RootTree myRootTree = new RootTree();
 	private boolean myDoGroupTitlesByFirstLetter;
 
-	private final static int STATUS_LOADING = 1;
-	private final static int STATUS_SEARCHING = 2;
+	protected final static int STATUS_LOADING = 1;
+	protected final static int STATUS_SEARCHING = 2;
 	private volatile int myStatusMask = 0;
 
-	private synchronized void setStatus(int status) {
-		myStatusMask = status;
-		fireModelChangedEvent(ChangeListener.Code.StatusChanged);
+	protected synchronized void addStatusFlags(int flags) {
+		if ((myStatusMask & flags) != flags) {
+			myStatusMask = myStatusMask | flags;
+			fireModelChangedEvent(ChangeListener.Code.StatusChanged);
+		}
+	}
+
+	protected synchronized void removeStatusFlags(int flags) {
+		if ((myStatusMask & flags) != 0) {
+			myStatusMask = myStatusMask & ~flags;
+			fireModelChangedEvent(ChangeListener.Code.StatusChanged);
+		}
 	}
 
 	protected Library() {
@@ -79,7 +87,7 @@ public abstract class Library extends AbstractLibrary {
 		return parentTree != null ? (LibraryTree)parentTree.getSubTree(key.Id) : null;
 	}
 
-	private ZLResourceFile getHelpFile() {
+	protected ZLResourceFile getHelpFile() {
 		final Locale locale = Locale.getDefault();
 
 		ZLResourceFile file = ZLResourceFile.createResourceFile(
@@ -99,78 +107,11 @@ public abstract class Library extends AbstractLibrary {
 		return ZLResourceFile.createResourceFile("data/help/MiniHelp.en.fb2");
 	}
 
-	public Book getBookByFile(ZLFile file) {
-		return DBBook.getByFile(file);
-	}
-
-	public Book getBookById(long id) {
-		return DBBook.getById(id);
-	}
+	public abstract Book getBookByFile(ZLFile file);
+	public abstract Book getBookById(long id);
 
 	public Book getHelpBook() {
 		return getBookByFile(getHelpFile());
-	}
-
-	private void collectBooks(
-		ZLFile file, FileInfoSet fileInfos,
-		Map<Long,Book> savedBooksByFileId, Map<Long,Book> orphanedBooksByFileId,
-		Set<Book> newBooks,
-		boolean doReadMetaInfo
-	) {
-		final long fileId = fileInfos.getId(file);
-		if (savedBooksByFileId.get(fileId) != null) {
-			return;
-		}
-
-		Book book = orphanedBooksByFileId.get(fileId);
-		if (book != null && (!doReadMetaInfo || book.readMetaInfo())) {
-			addBookToLibrary(book);
-			fireModelChangedEvent(ChangeListener.Code.BookAdded);
-			newBooks.add(book);
-			return;
-		}
-
-		book = new DBBook(file);
-		if (book.readMetaInfo()) {
-			addBookToLibrary(book);
-			fireModelChangedEvent(ChangeListener.Code.BookAdded);
-			newBooks.add(book);
-			return;
-		}
-
-		if (file.isArchive()) {
-			for (ZLFile entry : fileInfos.archiveEntries(file)) {
-				collectBooks(
-					entry, fileInfos,
-					savedBooksByFileId, orphanedBooksByFileId,
-					newBooks,
-					doReadMetaInfo
-				);
-			}
-		}
-	}
-
-	private List<ZLPhysicalFile> collectPhysicalFiles() {
-		final Queue<ZLFile> dirQueue = new LinkedList<ZLFile>();
-		final HashSet<ZLFile> dirSet = new HashSet<ZLFile>();
-		final LinkedList<ZLPhysicalFile> fileList = new LinkedList<ZLPhysicalFile>();
-
-		dirQueue.offer(new ZLPhysicalFile(new File(Paths.BooksDirectoryOption().getValue())));
-
-		while (!dirQueue.isEmpty()) {
-			for (ZLFile file : dirQueue.poll().children()) {
-				if (file.isDirectory()) {
-					if (!dirSet.contains(file)) {
-						dirQueue.add(file);
-						dirSet.add(file);
-					}
-				} else {
-					file.setCached(true);
-					fileList.add((ZLPhysicalFile)file);
-				}
-			}
-		}
-		return fileList;
 	}
 
 	private final List<?> myNullList = Collections.singletonList(null);
@@ -183,7 +124,7 @@ public abstract class Library extends AbstractLibrary {
 		}
 	}
 
-	private synchronized void addBookToLibrary(Book book) {
+	protected synchronized void addBookToLibrary(Book book) {
 		myBooks.add(book);
 
 		List<Author> authors = book.authors();
@@ -273,156 +214,6 @@ public abstract class Library extends AbstractLibrary {
 		fireModelChangedEvent(ChangeListener.Code.BookAdded);
 	}
 
-	private void build() {
-		// Step 0: get database books marked as "existing"
-		final FileInfoSet fileInfos = new FileInfoSet();
-		final Map<Long,Book> savedBooksByFileId = myDatabase.loadBooks(fileInfos, true);
-		final Map<Long,Book> savedBooksByBookId = new HashMap<Long,Book>();
-		for (Book b : savedBooksByFileId.values()) {
-			savedBooksByBookId.put(b.getId(), b);
-		}
-
-		// Step 1: set myDoGroupTitlesByFirstLetter value,
-        // add "existing" books into recent and favorites lists
-		if (savedBooksByFileId.size() > 10) {
-			final HashSet<String> letterSet = new HashSet<String>();
-			for (Book book : savedBooksByFileId.values()) {
-				final String letter = TitleTree.firstTitleLetter(book);
-				if (letter != null) {
-					letterSet.add(letter);
-				}
-			}
-			myDoGroupTitlesByFirstLetter = savedBooksByFileId.values().size() > letterSet.size() * 5 / 4;
-		}
-
-		for (long id : myDatabase.loadRecentBookIds()) {
-			Book book = savedBooksByBookId.get(id);
-			if (book == null) {
-				book = getBookById(id);
-				if (book != null && !book.File.exists()) {
-					book = null;
-				}
-			}
-			if (book != null) {
-				new BookTree(getFirstLevelTree(ROOT_RECENT), book, true);
-			}
-		}
-
-		for (long id : myDatabase.loadFavoritesIds()) {
-			Book book = savedBooksByBookId.get(id);
-			if (book == null) {
-				book = getBookById(id);
-				if (book != null && !book.File.exists()) {
-					book = null;
-				}
-			}
-			if (book != null) {
-				getFirstLevelTree(ROOT_FAVORITES).getBookSubTree(book, true);
-			}
-		}
-
-		fireModelChangedEvent(ChangeListener.Code.BookAdded);
-
-		// Step 2: check if files corresponding to "existing" books really exists;
-		//         add books to library if yes (and reload book info if needed);
-		//         remove from recent/favorites list if no;
-		//         collect newly "orphaned" books
-		final Set<Book> orphanedBooks = new HashSet<Book>();
-		int count = 0;
-		for (Book book : savedBooksByFileId.values()) {
-			synchronized (this) {
-				if (book.File.exists()) {
-					boolean doAdd = true;
-					final ZLPhysicalFile file = book.File.getPhysicalFile();
-					if (file == null) {
-						continue;
-					}
-					if (!fileInfos.check(file, true)) {
-						if (book.readMetaInfo()) {
-							book.save();
-						} else {
-							doAdd = false;
-						}
-						file.setCached(false);
-					}
-					if (doAdd) {
-						addBookToLibrary(book);
-						if (++count % 16 == 0) {
-							fireModelChangedEvent(ChangeListener.Code.BookAdded);
-						}
-					}
-				} else {
-					myRootTree.removeBook(book, true);
-					fireModelChangedEvent(ChangeListener.Code.BookRemoved);
-					orphanedBooks.add(book);
-				}
-			}
-		}
-		fireModelChangedEvent(ChangeListener.Code.BookAdded);
-		myDatabase.setExistingFlag(orphanedBooks, false);
-
-		// Step 3: collect books from physical files; add new, update already added,
-		//         unmark orphaned as existing again, collect newly added
-		final Map<Long,Book> orphanedBooksByFileId = myDatabase.loadBooks(fileInfos, false);
-		final Set<Book> newBooks = new HashSet<Book>();
-
-		final List<ZLPhysicalFile> physicalFilesList = collectPhysicalFiles();
-		for (ZLPhysicalFile file : physicalFilesList) {
-			collectBooks(
-				file, fileInfos,
-				savedBooksByFileId, orphanedBooksByFileId,
-				newBooks,
-				!fileInfos.check(file, true)
-			);
-			file.setCached(false);
-		}
-		
-		// Step 4: add help file
-		final ZLFile helpFile = getHelpFile();
-		Book helpBook = savedBooksByFileId.get(fileInfos.getId(helpFile));
-		if (helpBook == null) {
-			helpBook = new DBBook(helpFile);
-			helpBook.readMetaInfo();
-		}
-		addBookToLibrary(helpBook);
-		fireModelChangedEvent(ChangeListener.Code.BookAdded);
-
-		// Step 5: save changes into database
-		fileInfos.save();
-
-		myDatabase.executeAsATransaction(new Runnable() {
-			public void run() {
-				for (Book book : newBooks) {
-					book.save();
-				}
-			}
-		});
-		myDatabase.setExistingFlag(newBooks, true);
-	}
-
-	private volatile boolean myBuildStarted = false;
-
-	public synchronized void startBuild() {
-		if (myBuildStarted) {
-			fireModelChangedEvent(ChangeListener.Code.StatusChanged);
-			return;
-		}
-		myBuildStarted = true;
-
-		setStatus(myStatusMask | STATUS_LOADING);
-		final Thread builder = new Thread("Library.build") {
-			public void run() {
-				try {
-					build();
-				} finally {
-					setStatus(myStatusMask & ~STATUS_LOADING);
-				}
-			}
-		};
-		builder.setPriority((Thread.MIN_PRIORITY + Thread.NORM_PRIORITY) / 2);
-		builder.start();
-	}
-
 	@Override
 	public boolean isUpToDate() {
 		return myStatusMask == 0;
@@ -430,13 +221,13 @@ public abstract class Library extends AbstractLibrary {
 
 	@Override
 	public void startBookSearch(final String pattern) {
-		setStatus(myStatusMask | STATUS_SEARCHING);
+		addStatusFlags(STATUS_SEARCHING);
 		final Thread searcher = new Thread("Library.searchBooks") {
 			public void run() {
 				try {
 					searchBooks(pattern);
 				} finally {
-					setStatus(myStatusMask & ~STATUS_SEARCHING);
+					removeStatusFlags(STATUS_SEARCHING);
 				}
 			}
 		};

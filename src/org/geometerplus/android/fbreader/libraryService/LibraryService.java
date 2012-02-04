@@ -37,8 +37,8 @@ public class LibraryService extends Service implements Library.ChangeListener {
 			if (database == null) {
 				database = new SQLiteBooksDatabase(LibraryService.this, "LIBRARY SERVICE");
 			}
-			myBaseLibrary = new DBLibrary(database);
-			((DBLibrary)myBaseLibrary).startBuild();
+			//myBaseLibrary = new DBLibrary(database);
+			myBaseLibrary = DBLibrary.Instance();
 		}
 
 		public boolean isUpToDate() {

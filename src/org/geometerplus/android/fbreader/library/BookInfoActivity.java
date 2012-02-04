@@ -79,9 +79,6 @@ public class BookInfoActivity extends Activity {
 			db = new SQLiteBooksDatabase(this, "LIBRARY");
 		}
 		myLibrary = DBLibrary.Instance();
-		if (myLibrary == null) {
-			myLibrary = new DBLibrary(db);
-		}
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.book_info);

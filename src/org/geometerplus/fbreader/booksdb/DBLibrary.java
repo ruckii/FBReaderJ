@@ -20,8 +20,12 @@
 package org.geometerplus.fbreader.booksdb;
 
 import java.util.*;
+import java.io.File;
+
+import org.geometerplus.zlibrary.core.filesystem.*;
 
 import org.geometerplus.fbreader.library.*;
+import org.geometerplus.fbreader.Paths;
 
 public class DBLibrary extends Library {
 	private static DBLibrary ourInstance;
@@ -34,20 +38,21 @@ public class DBLibrary extends Library {
 
 	private final BooksDatabase myDatabase;
 
-	public DBLibrary(BooksDatabase db) {
+	private DBLibrary(BooksDatabase db) {
 		myDatabase = db;
+		startBuild();
 	}
 
 	@Override
 	public Book getRecentBook() {
 		List<Long> recentIds = myDatabase.loadRecentBookIds();
-		return recentIds.size() > 0 ? DBBook.getById(recentIds.get(0)) : null;
+		return recentIds.size() > 0 ? getBookById(recentIds.get(0)) : null;
 	}
 
 	@Override
 	public Book getPreviousBook() {
 		List<Long> recentIds = myDatabase.loadRecentBookIds();
-		return recentIds.size() > 1 ? DBBook.getById(recentIds.get(1)) : null;
+		return recentIds.size() > 1 ? getBookById(recentIds.get(1)) : null;
 	}
 
 	@Override
@@ -72,5 +77,227 @@ public class DBLibrary extends Library {
 		final List<Bookmark> list = BooksDatabase.Instance().loadBookmarks(book.getId(), false);
 		Collections.sort(list, new Bookmark.ByTimeComparator());
 		return list;
+	}
+
+	@Override
+	public DBBook getBookByFile(ZLFile file) {
+		return DBBook.getByFile(myDatabase, file);
+	}
+
+	@Override
+	public DBBook getBookById(long id) {
+		return DBBook.getById(myDatabase, id);
+	}
+
+	private void build() {
+		// Step 0: get database books marked as "existing"
+		final FileInfoSet fileInfos = new FileInfoSet();
+		final Map<Long,DBBook> savedBooksByFileId = myDatabase.loadBooks(fileInfos, true);
+		final Map<Long,DBBook> savedBooksByBookId = new HashMap<Long,DBBook>();
+		for (DBBook b : savedBooksByFileId.values()) {
+			savedBooksByBookId.put(b.getId(), b);
+		}
+
+		// Step 1: set myDoGroupTitlesByFirstLetter value,
+        // add "existing" books into recent and favorites lists
+		if (savedBooksByFileId.size() > 10) {
+			final HashSet<String> letterSet = new HashSet<String>();
+			for (DBBook book : savedBooksByFileId.values()) {
+				final String letter = TitleTree.firstTitleLetter(book);
+				if (letter != null) {
+					letterSet.add(letter);
+				}
+			}
+			myDoGroupTitlesByFirstLetter = savedBooksByFileId.values().size() > letterSet.size() * 5 / 4;
+		}
+
+		for (long id : myDatabase.loadRecentBookIds()) {
+			DBBook book = savedBooksByBookId.get(id);
+			if (book == null) {
+				book = getBookById(id);
+				if (book != null && !book.File.exists()) {
+					book = null;
+				}
+			}
+			if (book != null) {
+				new BookTree(getFirstLevelTree(ROOT_RECENT), book, true);
+			}
+		}
+
+		for (long id : myDatabase.loadFavoritesIds()) {
+			DBBook book = savedBooksByBookId.get(id);
+			if (book == null) {
+				book = getBookById(id);
+				if (book != null && !book.File.exists()) {
+					book = null;
+				}
+			}
+			if (book != null) {
+				getFirstLevelTree(ROOT_FAVORITES).getBookSubTree(book, true);
+			}
+		}
+
+		fireModelChangedEvent(ChangeListener.Code.BookAdded);
+
+		// Step 2: check if files corresponding to "existing" books really exists;
+		//         add books to library if yes (and reload book info if needed);
+		//         remove from recent/favorites list if no;
+		//         collect newly "orphaned" books
+		final Set<DBBook> orphanedBooks = new HashSet<DBBook>();
+		int count = 0;
+		for (DBBook book : savedBooksByFileId.values()) {
+			synchronized (this) {
+				if (book.File.exists()) {
+					boolean doAdd = true;
+					final ZLPhysicalFile file = book.File.getPhysicalFile();
+					if (file == null) {
+						continue;
+					}
+					if (!fileInfos.check(file, true)) {
+						if (book.readMetaInfo()) {
+							book.save();
+						} else {
+							doAdd = false;
+						}
+						file.setCached(false);
+					}
+					if (doAdd) {
+						addBookToLibrary(book);
+						if (++count % 16 == 0) {
+							fireModelChangedEvent(ChangeListener.Code.BookAdded);
+						}
+					}
+				} else {
+					myRootTree.removeBook(book, true);
+					fireModelChangedEvent(ChangeListener.Code.BookRemoved);
+					orphanedBooks.add(book);
+				}
+			}
+		}
+		fireModelChangedEvent(ChangeListener.Code.BookAdded);
+		myDatabase.setExistingFlag(orphanedBooks, false);
+
+		// Step 3: collect books from physical files; add new, update already added,
+		//         unmark orphaned as existing again, collect newly added
+		final Map<Long,DBBook> orphanedBooksByFileId = myDatabase.loadBooks(fileInfos, false);
+		final Set<DBBook> newBooks = new HashSet<DBBook>();
+
+		final List<ZLPhysicalFile> physicalFilesList = collectPhysicalFiles();
+		for (ZLPhysicalFile file : physicalFilesList) {
+			collectBooks(
+				file, fileInfos,
+				savedBooksByFileId, orphanedBooksByFileId,
+				newBooks,
+				!fileInfos.check(file, true)
+			);
+			file.setCached(false);
+		}
+		
+		// Step 4: add help file
+		final ZLFile helpFile = getHelpFile();
+		DBBook helpBook = savedBooksByFileId.get(fileInfos.getId(helpFile));
+		if (helpBook == null) {
+			helpBook = new DBBook(helpFile);
+			helpBook.readMetaInfo();
+		}
+		addBookToLibrary(helpBook);
+		fireModelChangedEvent(ChangeListener.Code.BookAdded);
+
+		// Step 5: save changes into database
+		fileInfos.save();
+
+		myDatabase.executeAsATransaction(new Runnable() {
+			public void run() {
+				for (DBBook book : newBooks) {
+					book.save();
+				}
+			}
+		});
+		myDatabase.setExistingFlag(newBooks, true);
+	}
+
+	private List<ZLPhysicalFile> collectPhysicalFiles() {
+		final Queue<ZLFile> dirQueue = new LinkedList<ZLFile>();
+		final HashSet<ZLFile> dirSet = new HashSet<ZLFile>();
+		final LinkedList<ZLPhysicalFile> fileList = new LinkedList<ZLPhysicalFile>();
+
+		dirQueue.offer(new ZLPhysicalFile(new File(Paths.BooksDirectoryOption().getValue())));
+
+		while (!dirQueue.isEmpty()) {
+			for (ZLFile file : dirQueue.poll().children()) {
+				if (file.isDirectory()) {
+					if (!dirSet.contains(file)) {
+						dirQueue.add(file);
+						dirSet.add(file);
+					}
+				} else {
+					file.setCached(true);
+					fileList.add((ZLPhysicalFile)file);
+				}
+			}
+		}
+		return fileList;
+	}
+
+	private void collectBooks(
+		ZLFile file, FileInfoSet fileInfos,
+		Map<Long,DBBook> savedBooksByFileId, Map<Long,DBBook> orphanedBooksByFileId,
+		Set<DBBook> newBooks,
+		boolean doReadMetaInfo
+	) {
+		final long fileId = fileInfos.getId(file);
+		if (savedBooksByFileId.get(fileId) != null) {
+			return;
+		}
+
+		DBBook book = orphanedBooksByFileId.get(fileId);
+		if (book != null && (!doReadMetaInfo || book.readMetaInfo())) {
+			addBookToLibrary(book);
+			fireModelChangedEvent(ChangeListener.Code.BookAdded);
+			newBooks.add(book);
+			return;
+		}
+
+		book = new DBBook(file);
+		if (book.readMetaInfo()) {
+			addBookToLibrary(book);
+			fireModelChangedEvent(ChangeListener.Code.BookAdded);
+			newBooks.add(book);
+			return;
+		}
+
+		if (file.isArchive()) {
+			for (ZLFile entry : fileInfos.archiveEntries(file)) {
+				collectBooks(
+					entry, fileInfos,
+					savedBooksByFileId, orphanedBooksByFileId,
+					newBooks,
+					doReadMetaInfo
+				);
+			}
+		}
+	}
+
+	private volatile boolean myBuildStarted = false;
+
+	private synchronized void startBuild() {
+		if (myBuildStarted) {
+			fireModelChangedEvent(ChangeListener.Code.StatusChanged);
+			return;
+		}
+		myBuildStarted = true;
+
+		addStatusFlags(STATUS_LOADING);
+		final Thread builder = new Thread("Library.build") {
+			public void run() {
+				try {
+					build();
+				} finally {
+					removeStatusFlags(STATUS_LOADING);
+				}
+			}
+		};
+		builder.setPriority((Thread.MIN_PRIORITY + Thread.NORM_PRIORITY) / 2);
+		builder.start();
 	}
 }

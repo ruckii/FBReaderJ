@@ -105,10 +105,7 @@ public class EditBookInfoActivity extends ZLPreferenceActivity {
 		if (db == null) {
 			db = new SQLiteBooksDatabase(this, "LIBRARY");
 		}
-		Library library = DBLibrary.Instance();
-		if (library == null) {
-			library = new DBLibrary(db);
-		}
+		final Library library = DBLibrary.Instance();
 
 		final String path = intent.getStringExtra(BookInfoActivity.CURRENT_BOOK_PATH_KEY);
 		final ZLFile file = ZLFile.createFileByPath(path);

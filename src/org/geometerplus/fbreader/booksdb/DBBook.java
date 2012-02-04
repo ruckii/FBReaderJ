@@ -31,8 +31,8 @@ import org.geometerplus.fbreader.formats.*;
 import org.geometerplus.fbreader.Paths;
 
 public class DBBook extends Book {
-	public static Book getById(long bookId) {
-		final DBBook book = BooksDatabase.Instance().loadBook(bookId);
+	static DBBook getById(BooksDatabase db, long bookId) {
+		final DBBook book = db.loadBook(bookId);
 		if (book == null) {
 			return null;
 		}
@@ -56,7 +56,7 @@ public class DBBook extends Book {
 		return book.readMetaInfo() ? book : null;
 	}
 
-	public static Book getByFile(ZLFile bookFile) {
+	static DBBook getByFile(BooksDatabase db, ZLFile bookFile) {
 		if (bookFile == null) {
 			return null;
 		}
@@ -68,7 +68,7 @@ public class DBBook extends Book {
 
 		final FileInfoSet fileInfos = new FileInfoSet(bookFile);
 
-		DBBook book = BooksDatabase.Instance().loadBookByFile(fileInfos.getId(bookFile), bookFile);
+		DBBook book = db.loadBookByFile(fileInfos.getId(bookFile), bookFile);
 		if (book != null) {
 			book.loadLists();
 		}

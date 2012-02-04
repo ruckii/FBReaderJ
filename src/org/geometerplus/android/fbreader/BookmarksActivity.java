@@ -77,10 +77,7 @@ public class BookmarksActivity extends TabActivity implements MenuItem.OnMenuIte
 		if (db == null) {
 			db = new SQLiteBooksDatabase(this, "BOOKMARKS");
 		}
-		if (myLibrary == null) {
-			myLibrary = new DBLibrary(db);
-			myLibrary.startBuild();
-		}
+		myLibrary = DBLibrary.Instance();
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
