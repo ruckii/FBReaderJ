@@ -19,9 +19,4 @@
 
 package org.geometerplus.android.fbreader.libraryService;
 
-import org.geometerplus.android.fbreader.libraryService.BookObject;
-
-interface LibraryInterface {
-	boolean isUpToDate();
-	BookObject getBookByFile(String path);
-}
+parcelable BookObject;

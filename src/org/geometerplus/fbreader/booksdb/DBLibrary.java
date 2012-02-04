@@ -24,6 +24,8 @@ import java.io.File;
 
 import org.geometerplus.zlibrary.core.filesystem.*;
 
+import org.geometerplus.zlibrary.text.view.ZLTextPosition;
+
 import org.geometerplus.fbreader.library.*;
 import org.geometerplus.fbreader.Paths;
 
@@ -113,13 +115,82 @@ public class DBLibrary extends Library {
 	}
 
 	@Override
-	public DBBook getBookByFile(ZLFile file) {
-		return DBBook.getByFile(myDatabase, file);
+	public DBBook getBookByFile(ZLFile bookFile) {
+		if (bookFile == null) {
+			return null;
+		}
+
+		final ZLPhysicalFile physicalFile = bookFile.getPhysicalFile();
+		if (physicalFile != null && !physicalFile.exists()) {
+			return null;
+		}
+
+		final FileInfoSet fileInfos = new FileInfoSet(bookFile);
+
+		DBBook book = myDatabase.loadBookByFile(fileInfos.getId(bookFile), bookFile);
+		if (book != null) {
+			book.loadLists(myDatabase);
+		}
+
+		if (book != null && fileInfos.check(physicalFile, physicalFile != bookFile)) {
+			return book;
+		}
+		fileInfos.save();
+
+		if (book == null) {
+			book = new DBBook(bookFile);
+		}
+		if (book.readMetaInfo()) {
+			book.save();
+			return book;
+		}
+		return null;
 	}
 
 	@Override
 	public DBBook getBookById(long id) {
-		return DBBook.getById(myDatabase, id);
+		final DBBook book = myDatabase.loadBook(id);
+		if (book == null) {
+			return null;
+		}
+		book.loadLists(myDatabase);
+
+		final ZLFile bookFile = book.File;
+		final ZLPhysicalFile physicalFile = bookFile.getPhysicalFile();
+		if (physicalFile == null) {
+			return book;
+		}
+		if (!physicalFile.exists()) {
+			return null;
+		}
+
+		FileInfoSet fileInfos = new FileInfoSet(physicalFile);
+		if (fileInfos.check(physicalFile, physicalFile != bookFile)) {
+			return book;
+		}
+		fileInfos.save();
+
+		return book.readMetaInfo() ? book : null;
+	}
+
+	@Override
+	public void reloadInfoFromDatabase(Book book) {
+		final DBBook dbbook = (DBBook)book;
+		myDatabase.reloadBook(dbbook);
+		dbbook.loadLists(myDatabase);
+	}
+
+	@Override
+	public ZLTextPosition getStoredPosition(Book book) {
+		return myDatabase.getStoredPosition(book.getId());
+	}
+
+	@Override
+	public void storePosition(Book book, ZLTextPosition position) {
+		final long id = book.getId();
+		if (id != -1) {
+			myDatabase.storePosition(id, position);
+		}
 	}
 
 	private void build() {

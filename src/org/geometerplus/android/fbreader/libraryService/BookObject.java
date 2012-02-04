@@ -19,9 +19,38 @@
 
 package org.geometerplus.android.fbreader.libraryService;
 
-import org.geometerplus.android.fbreader.libraryService.BookObject;
+import android.os.Parcelable;
+import android.os.Parcel;
 
-interface LibraryInterface {
-	boolean isUpToDate();
-	BookObject getBookByFile(String path);
+import org.geometerplus.fbreader.library.Book;
+
+public class BookObject implements Parcelable {
+	final String Path;
+
+	BookObject(String path) {
+		Path = path;
+	}
+
+	BookObject(Book book) {
+		this(book.File.getPath());
+	}
+
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeString(Path);
+	}
+
+	public int describeContents() {
+		return 0;
+	}
+
+	public static final Parcelable.Creator<BookObject> CREATOR =
+		new Parcelable.Creator<BookObject>() {
+			public BookObject createFromParcel(Parcel parcel) {
+				return new BookObject(parcel.readString());
+			}
+
+			public BookObject[] newArray(int size) {
+				return new BookObject[size];
+			}
+		};
 }

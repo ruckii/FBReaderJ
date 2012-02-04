@@ -52,8 +52,6 @@ public abstract class Book {
 		}
 	}
 
-	public abstract void reloadInfoFromDatabase();
-
 	protected abstract boolean readMetaInfo();
 
 	public abstract long getId();
@@ -134,9 +132,6 @@ public abstract class Book {
 	}
 
 	public abstract boolean save();
-
-	public abstract ZLTextPosition getStoredPosition();
-	public abstract void storePosition(ZLTextPosition position);
 
 	public abstract boolean isHyperlinkVisited(String linkId);
 	public abstract void markHyperlinkAsVisited(String linkId);

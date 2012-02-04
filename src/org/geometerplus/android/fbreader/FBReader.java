@@ -47,6 +47,7 @@ import org.geometerplus.fbreader.fbreader.FBReaderApp;
 import org.geometerplus.fbreader.bookmodel.BookModel;
 import org.geometerplus.fbreader.library.Book;
 import org.geometerplus.fbreader.tips.TipsManager;
+import org.geometerplus.fbreader.booksdb.DBLibrary;
 
 import org.geometerplus.android.fbreader.library.SQLiteBooksDatabase;
 import org.geometerplus.android.fbreader.library.KillerCallback;
@@ -359,7 +360,7 @@ public final class FBReader extends ZLAndroidActivity {
 				if (model != null) {
 					final Book book = model.Book;
 					if (book != null) {
-						book.reloadInfoFromDatabase();
+						DBLibrary.Instance().reloadInfoFromDatabase(book);
 						ZLTextHyphenator.Instance().load(book.getLanguage());
 					}
 				}

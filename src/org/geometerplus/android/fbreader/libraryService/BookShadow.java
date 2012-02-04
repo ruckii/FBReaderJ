@@ -19,9 +19,12 @@
 
 package org.geometerplus.android.fbreader.libraryService;
 
-import org.geometerplus.android.fbreader.libraryService.BookObject;
+import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 
-interface LibraryInterface {
-	boolean isUpToDate();
-	BookObject getBookByFile(String path);
+import org.geometerplus.fbreader.library.Book;
+
+public abstract class BookShadow extends Book {
+	BookShadow(BookObject object) {
+		super(ZLFile.createFileByPath(object.Path));
+	}
 }
