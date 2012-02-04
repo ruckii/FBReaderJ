@@ -57,7 +57,7 @@ public abstract class Library extends AbstractLibrary {
 		new FirstLevelTree(myRootTree, ROOT_BY_AUTHOR);
 		new FirstLevelTree(myRootTree, ROOT_BY_TITLE);
 		new FirstLevelTree(myRootTree, ROOT_BY_TAG);
-		new FileFirstLevelTree(myRootTree, ROOT_FILE_TREE);
+		new FileFirstLevelTree(this, myRootTree, ROOT_FILE_TREE);
 	}
 
 	public LibraryTree getRootTree() {
@@ -130,7 +130,7 @@ public abstract class Library extends AbstractLibrary {
 			return;
 		}
 
-		book = new Book(file);
+		book = new DBBook(file);
 		if (book.readMetaInfo()) {
 			addBookToLibrary(book);
 			fireModelChangedEvent(ChangeListener.Code.BookAdded);
@@ -298,7 +298,7 @@ public abstract class Library extends AbstractLibrary {
 		for (long id : myDatabase.loadRecentBookIds()) {
 			Book book = savedBooksByBookId.get(id);
 			if (book == null) {
-				book = Book.getById(id);
+				book = getBookById(id);
 				if (book != null && !book.File.exists()) {
 					book = null;
 				}
@@ -311,7 +311,7 @@ public abstract class Library extends AbstractLibrary {
 		for (long id : myDatabase.loadFavoritesIds()) {
 			Book book = savedBooksByBookId.get(id);
 			if (book == null) {
-				book = Book.getById(id);
+				book = getBookById(id);
 				if (book != null && !book.File.exists()) {
 					book = null;
 				}
@@ -381,7 +381,7 @@ public abstract class Library extends AbstractLibrary {
 		final ZLFile helpFile = getHelpFile();
 		Book helpBook = savedBooksByFileId.get(fileInfos.getId(helpFile));
 		if (helpBook == null) {
-			helpBook = new Book(helpFile);
+			helpBook = new DBBook(helpFile);
 			helpBook.readMetaInfo();
 		}
 		addBookToLibrary(helpBook);
