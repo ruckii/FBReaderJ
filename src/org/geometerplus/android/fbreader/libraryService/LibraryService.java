@@ -23,6 +23,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import org.geometerplus.zlibrary.core.filesystem.ZLFile;
+
 import org.geometerplus.fbreader.library.*;
 import org.geometerplus.fbreader.booksdb.*;
 
@@ -43,6 +45,10 @@ public class LibraryService extends Service implements Library.ChangeListener {
 
 		public boolean isUpToDate() {
 			return myBaseLibrary.isUpToDate();
+		}
+
+		public BookObject getBookByFile(String path) {
+			return new BookObject(myBaseLibrary.getBookByFile(ZLFile.createFileByPath(path)));
 		}
 	}
 

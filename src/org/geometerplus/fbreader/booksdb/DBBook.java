@@ -31,63 +31,6 @@ import org.geometerplus.fbreader.formats.*;
 import org.geometerplus.fbreader.Paths;
 
 public class DBBook extends Book {
-	static DBBook getById(BooksDatabase db, long bookId) {
-		final DBBook book = db.loadBook(bookId);
-		if (book == null) {
-			return null;
-		}
-		book.loadLists();
-
-		final ZLFile bookFile = book.File;
-		final ZLPhysicalFile physicalFile = bookFile.getPhysicalFile();
-		if (physicalFile == null) {
-			return book;
-		}
-		if (!physicalFile.exists()) {
-			return null;
-		}
-
-		FileInfoSet fileInfos = new FileInfoSet(physicalFile);
-		if (fileInfos.check(physicalFile, physicalFile != bookFile)) {
-			return book;
-		}
-		fileInfos.save();
-
-		return book.readMetaInfo() ? book : null;
-	}
-
-	static DBBook getByFile(BooksDatabase db, ZLFile bookFile) {
-		if (bookFile == null) {
-			return null;
-		}
-
-		final ZLPhysicalFile physicalFile = bookFile.getPhysicalFile();
-		if (physicalFile != null && !physicalFile.exists()) {
-			return null;
-		}
-
-		final FileInfoSet fileInfos = new FileInfoSet(bookFile);
-
-		DBBook book = db.loadBookByFile(fileInfos.getId(bookFile), bookFile);
-		if (book != null) {
-			book.loadLists();
-		}
-
-		if (book != null && fileInfos.check(physicalFile, physicalFile != bookFile)) {
-			return book;
-		}
-		fileInfos.save();
-
-		if (book == null) {
-			book = new DBBook(bookFile);
-		}
-		if (book.readMetaInfo()) {
-			book.save();
-			return book;
-		}
-		return null;
-	}
-
 	private long myId;
 
 	private String myEncoding;
@@ -113,27 +56,16 @@ public class DBBook extends Book {
 		myId = -1;
 	}
 
+	void loadLists(BooksDatabase db) {
+		myAuthors = db.loadAuthors(myId);
+		myTags = db.loadTags(myId);
+		mySeriesInfo = db.loadSeriesInfo(myId);
+		myIsSaved = true;
+	}
+
 	@Override
 	public long getId() {
 		return myId;
-	}
-
-	private void loadLists() {
-		final BooksDatabase database = BooksDatabase.Instance();
-		myAuthors = database.loadAuthors(myId);
-		myTags = database.loadTags(myId);
-		mySeriesInfo = database.loadSeriesInfo(myId);
-		myIsSaved = true;
-	}
-
-	@Override
-	public void reloadInfoFromDatabase() {
-		final BooksDatabase database = BooksDatabase.Instance();
-		database.reloadBook(this);
-		myAuthors = database.loadAuthors(myId);
-		myTags = database.loadTags(myId);
-		mySeriesInfo = database.loadSeriesInfo(myId);
-		myIsSaved = true;
 	}
 
 	@Override
@@ -312,18 +244,6 @@ public class DBBook extends Book {
 
 		myIsSaved = true;
 		return true;
-	}
-
-	@Override
-	public ZLTextPosition getStoredPosition() {
-		return BooksDatabase.Instance().getStoredPosition(myId);
-	}
-
-	@Override
-	public void storePosition(ZLTextPosition position) {
-		if (myId != -1) {
-			BooksDatabase.Instance().storePosition(myId, position);
-		}
 	}
 
 	private Set<String> myVisitedHyperlinks;
