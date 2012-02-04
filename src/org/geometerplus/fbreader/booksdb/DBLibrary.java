@@ -324,7 +324,7 @@ public class DBLibrary extends Library {
 				}
 			}
 		};
-		builder.setPriority((Thread.MIN_PRIORITY + Thread.NORM_PRIORITY) / 2);
+		builder.setPriority(Thread.MIN_PRIORITY);
 		builder.start();
 	}
 }

@@ -58,7 +58,7 @@ public class BookInfoActivity extends Activity implements MenuItem.OnMenuItemCli
 	public static final String CURRENT_BOOK_PATH_KEY = "CurrentBookPath";
 	public static final String FROM_READING_MODE_KEY = "fromReadingMode";
 
-	private Library myLibrary;
+	private AbstractLibrary myLibrary;
 
 	private final ZLResource myResource = ZLResource.resource("bookInfo");
 	private ZLFile myFile;
