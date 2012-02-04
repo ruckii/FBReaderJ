@@ -35,6 +35,7 @@ import org.geometerplus.zlibrary.text.view.ZLTextPosition;
 import org.geometerplus.zlibrary.text.view.ZLTextFixedPosition;
 
 import org.geometerplus.fbreader.library.*;
+import org.geometerplus.fbreader.booksdb.*;
 
 import org.geometerplus.android.util.UIUtil;
 import org.geometerplus.android.util.SQLiteUtil;
@@ -126,8 +127,8 @@ public final class SQLiteBooksDatabase extends BooksDatabase {
 	}
 
 	@Override
-	protected Book loadBook(long bookId) {
-		Book book = null;
+	protected DBBook loadBook(long bookId) {
+		DBBook book = null;
 		final Cursor cursor = myDatabase.rawQuery("SELECT file_id,title,encoding,language FROM Books WHERE book_id = " + bookId, null);
 		if (cursor.moveToNext()) {
 			book = createBook(
@@ -139,7 +140,7 @@ public final class SQLiteBooksDatabase extends BooksDatabase {
 	}
 
 	@Override
-	protected void reloadBook(Book book) {
+	protected void reloadBook(DBBook book) {
 		final Cursor cursor = myDatabase.rawQuery("SELECT title,encoding,language FROM Books WHERE book_id = " + book.getId(), null);
 		if (cursor.moveToNext()) {
 			book.setTitle(cursor.getString(0));
@@ -149,11 +150,11 @@ public final class SQLiteBooksDatabase extends BooksDatabase {
 		cursor.close();
 	}
 
-	protected Book loadBookByFile(long fileId, ZLFile file) {
+	protected DBBook loadBookByFile(long fileId, ZLFile file) {
 		if (fileId == -1) {
 			return null;
 		}
-		Book book = null;
+		DBBook book = null;
 		final Cursor cursor = myDatabase.rawQuery("SELECT book_id,title,encoding,language FROM Books WHERE file_id = " + fileId, null);
 		if (cursor.moveToNext()) {
 			book = createBook(
@@ -187,16 +188,16 @@ public final class SQLiteBooksDatabase extends BooksDatabase {
 	}
 
 	@Override
-	protected Map<Long,Book> loadBooks(FileInfoSet infos, boolean existing) {
+	protected Map<Long,DBBook> loadBooks(FileInfoSet infos, boolean existing) {
 		Cursor cursor = myDatabase.rawQuery(
 			"SELECT book_id,file_id,title,encoding,language FROM Books WHERE `exists` = " + (existing ? 1 : 0), null
 		);
-		final HashMap<Long,Book> booksById = new HashMap<Long,Book>();
-		final HashMap<Long,Book> booksByFileId = new HashMap<Long,Book>();
+		final HashMap<Long,DBBook> booksById = new HashMap<Long,DBBook>();
+		final HashMap<Long,DBBook> booksByFileId = new HashMap<Long,DBBook>();
 		while (cursor.moveToNext()) {
 			final long id = cursor.getLong(0);
 			final long fileId = cursor.getLong(1);
-			final Book book = createBook(
+			final DBBook book = createBook(
 				id, infos.getFile(fileId), cursor.getString(2), cursor.getString(3), cursor.getString(4)
 			);
 			if (book != null) {
@@ -221,7 +222,7 @@ public final class SQLiteBooksDatabase extends BooksDatabase {
 			"SELECT book_id,author_id FROM BookAuthor ORDER BY author_index", null
 		);
 		while (cursor.moveToNext()) {
-			Book book = booksById.get(cursor.getLong(0));
+			DBBook book = booksById.get(cursor.getLong(0));
 			if (book != null) {
 				Author author = authorById.get(cursor.getLong(1));
 				if (author != null) {
@@ -233,7 +234,7 @@ public final class SQLiteBooksDatabase extends BooksDatabase {
 
 		cursor = myDatabase.rawQuery("SELECT book_id,tag_id FROM BookTag", null);
 		while (cursor.moveToNext()) {
-			Book book = booksById.get(cursor.getLong(0));
+			DBBook book = booksById.get(cursor.getLong(0));
 			if (book != null) {
 				addTag(book, getTagById(cursor.getLong(1)));
 			}
@@ -253,7 +254,7 @@ public final class SQLiteBooksDatabase extends BooksDatabase {
 			"SELECT book_id,series_id,book_index FROM BookSeries", null
 		);
 		while (cursor.moveToNext()) {
-			Book book = booksById.get(cursor.getLong(0));
+			DBBook book = booksById.get(cursor.getLong(0));
 			if (book != null) {
 				String series = seriesById.get(cursor.getLong(1));
 				if (series != null) {
@@ -266,7 +267,7 @@ public final class SQLiteBooksDatabase extends BooksDatabase {
 	}
 
 	@Override
-	protected void setExistingFlag(Collection<Book> books, boolean flag) {
+	protected void setExistingFlag(Collection<DBBook> books, boolean flag) {
 		if (books.isEmpty()) {
 			return;
 		}

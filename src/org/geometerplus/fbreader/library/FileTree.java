@@ -28,13 +28,15 @@ import org.geometerplus.fbreader.formats.PluginCollection;
 import org.geometerplus.fbreader.tree.FBTree;
 
 public class FileTree extends LibraryTree {
+	private final Library myLibrary;
 	private final ZLFile myFile;
 	private final String myName;
 	private final String mySummary;
 	private final boolean myIsSelectable;
 
-	FileTree(LibraryTree parent, ZLFile file, String name, String summary) {
+	FileTree(Library library, LibraryTree parent, ZLFile file, String name, String summary) {
 		super(parent);
+		myLibrary = library;
 		myFile = file;
 		myName = name;
 		mySummary = summary;
@@ -43,6 +45,7 @@ public class FileTree extends LibraryTree {
 
 	public FileTree(FileTree parent, ZLFile file) {
 		super(parent);
+		myLibrary = parent.myLibrary;
 		if (file.isArchive() && file.getPath().endsWith(".fb2.zip")) {
 			final List<ZLFile> children = file.children();
 			if (children.size() == 1) {
@@ -107,7 +110,7 @@ public class FileTree extends LibraryTree {
 
 	@Override
 	public Book getBook() {
-		return Book.getByFile(myFile);
+		return myLibrary.getBookByFile(myFile);
 	}
 
 	@Override

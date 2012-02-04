@@ -46,8 +46,9 @@ public class LibraryShadow extends AbstractLibrary {
 	}
 
 	@Override
-	public void removeBook(Book book, int removeMode) {
+	public boolean removeBook(Book book, int removeMode) {
 		// TODO: implement
+		return false;
 	}
 
 	public Book getRecentBook() {
@@ -71,13 +72,15 @@ public class LibraryShadow extends AbstractLibrary {
 	}
 
 	@Override
-	public void addBookToFavorites(Book book) {
+	public boolean addBookToFavorites(Book book) {
 		// TODO: implement
+		return false;
 	}
 
 	@Override
-	public void removeBookFromFavorites(Book book) {
+	public boolean removeBookFromFavorites(Book book) {
 		// TODO: implement
+		return false;
 	}
 
 	@Override

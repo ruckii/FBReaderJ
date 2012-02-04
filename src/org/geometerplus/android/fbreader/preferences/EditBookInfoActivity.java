@@ -30,7 +30,9 @@ import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 
 import org.geometerplus.zlibrary.text.hyphenation.ZLTextHyphenator;
 
+import org.geometerplus.fbreader.library.Library;
 import org.geometerplus.fbreader.library.Book;
+import org.geometerplus.fbreader.booksdb.*;
 
 import org.geometerplus.android.fbreader.library.BookInfoActivity;
 import org.geometerplus.android.fbreader.library.SQLiteBooksDatabase;
@@ -99,13 +101,15 @@ public class EditBookInfoActivity extends ZLPreferenceActivity {
 
 	@Override
 	protected void init(Intent intent) {
-		if (SQLiteBooksDatabase.Instance() == null) {
-			new SQLiteBooksDatabase(this, "LIBRARY");
+		BooksDatabase db = SQLiteBooksDatabase.Instance();
+		if (db == null) {
+			db = new SQLiteBooksDatabase(this, "LIBRARY");
 		}
+		final Library library = DBLibrary.Instance();
 
 		final String path = intent.getStringExtra(BookInfoActivity.CURRENT_BOOK_PATH_KEY);
 		final ZLFile file = ZLFile.createFileByPath(path);
-		myBook = Book.getByFile(file);
+		myBook = library.getBookByFile(file);
 
 		if (myBook == null) {
 			finish();
