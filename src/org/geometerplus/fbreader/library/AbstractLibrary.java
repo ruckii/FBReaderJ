@@ -21,6 +21,9 @@ package org.geometerplus.fbreader.library;
 
 import java.util.*;
 
+import org.geometerplus.zlibrary.core.filesystem.ZLFile;
+import org.geometerplus.zlibrary.core.filesystem.ZLResourceFile;
+
 public abstract class AbstractLibrary {
 	private final List<ChangeListener> myListeners = Collections.synchronizedList(new LinkedList<ChangeListener>());
 
@@ -54,6 +57,9 @@ public abstract class AbstractLibrary {
 
 	public abstract boolean isUpToDate();
 
+	public abstract Book getBookByFile(ZLFile file);
+	public abstract Book getBookById(long id);
+
 	public static final int REMOVE_DONT_REMOVE = 0x00;
 	public static final int REMOVE_FROM_LIBRARY = 0x01;
 	public static final int REMOVE_FROM_DISK = 0x02;
@@ -63,6 +69,31 @@ public abstract class AbstractLibrary {
 
 	public abstract Book getRecentBook();
 	public abstract Book getPreviousBook();
+
+	protected ZLFile getHelpFile() {
+		final Locale locale = Locale.getDefault();
+
+		ZLResourceFile file = ZLResourceFile.createResourceFile(
+			"data/help/MiniHelp." + locale.getLanguage() + "_" + locale.getCountry() + ".fb2"
+		);
+		if (file.exists()) {
+			return file;
+		}
+
+		file = ZLResourceFile.createResourceFile(
+			"data/help/MiniHelp." + locale.getLanguage() + ".fb2"
+		);
+		if (file.exists()) {
+			return file;
+		}
+
+		return ZLResourceFile.createResourceFile("data/help/MiniHelp.en.fb2");
+	}
+
+	public Book getHelpBook() {
+		return getBookByFile(getHelpFile());
+	}
+
 	public abstract void addBookToRecentList(Book book);
 
 	public abstract boolean isBookInFavorites(Book book);
@@ -70,4 +101,7 @@ public abstract class AbstractLibrary {
 	public abstract boolean removeBookFromFavorites(Book book);
 
 	public abstract void startBookSearch(final String pattern);
+
+	public abstract List<Bookmark> allBookmarks();
+	public abstract List<Bookmark> invisibleBookmarks(Book book);
 }

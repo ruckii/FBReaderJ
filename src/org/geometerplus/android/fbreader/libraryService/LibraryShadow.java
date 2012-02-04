@@ -19,7 +19,11 @@
 
 package org.geometerplus.android.fbreader.libraryService;
 
+import java.util.*;
+
 import android.os.RemoteException;
+
+import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 
 import org.geometerplus.fbreader.library.*;
 
@@ -37,6 +41,16 @@ public class LibraryShadow extends AbstractLibrary {
 		} catch (RemoteException e) {
 			return false;
 		}
+	}
+
+	public Book getBookByFile(ZLFile file) {
+		// TODO: implement
+		return null;
+	}
+
+	public Book getBookById(long id) {
+		// TODO: implement
+		return null;
 	}
 
 	@Override
@@ -86,5 +100,17 @@ public class LibraryShadow extends AbstractLibrary {
 	@Override
 	public void startBookSearch(final String pattern) {
 		// TODO: implement
+	}
+
+	@Override
+	public List<Bookmark> allBookmarks() {
+		// TODO: implement
+		return null;
+	}
+
+	@Override
+	public List<Bookmark> invisibleBookmarks(Book book) {
+		// TODO: implement
+		return null;
 	}
 }

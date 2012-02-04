@@ -46,7 +46,7 @@ public class BookmarksActivity extends TabActivity implements MenuItem.OnMenuIte
 	private static final int EDIT_ITEM_ID = 1;
 	private static final int DELETE_ITEM_ID = 2;
 
-	private Library myLibrary;
+	private AbstractLibrary myLibrary;
 
 	List<Bookmark> AllBooksBookmarks;
 	private final List<Bookmark> myThisBookBookmarks = new LinkedList<Bookmark>();
