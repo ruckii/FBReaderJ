@@ -215,7 +215,7 @@ public final class FBReaderApp extends ZLApplication {
 			onViewChanged();
 
 			if (Model != null) {
-				Model.Book.storePosition(BookTextView.getStartCursor());
+				DBLibrary.Instance().storePosition(Model.Book, BookTextView.getStartCursor());
 			}
 			BookTextView.setModel(null);
 			FootnoteView.setModel(null);
@@ -228,7 +228,7 @@ public final class FBReaderApp extends ZLApplication {
 			if (Model != null) {
 				ZLTextHyphenator.Instance().load(book.getLanguage());
 				BookTextView.setModel(Model.BookTextModel);
-				BookTextView.gotoPosition(book.getStoredPosition());
+				BookTextView.gotoPosition(DBLibrary.Instance().getStoredPosition(book));
 				if (bookmark == null) {
 					setView(BookTextView);
 				} else {
@@ -297,7 +297,7 @@ public final class FBReaderApp extends ZLApplication {
 
 	public void onWindowClosing() {
 		if (Model != null && BookTextView != null) {
-			Model.Book.storePosition(BookTextView.getStartCursor());
+			DBLibrary.Instance().storePosition(Model.Book, BookTextView.getStartCursor());
 		}
 	}
 

@@ -24,6 +24,8 @@ import java.util.*;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.filesystem.ZLResourceFile;
 
+import org.geometerplus.zlibrary.text.view.ZLTextPosition;
+
 public abstract class AbstractLibrary {
 	private final List<ChangeListener> myListeners = Collections.synchronizedList(new LinkedList<ChangeListener>());
 
@@ -59,6 +61,8 @@ public abstract class AbstractLibrary {
 
 	public abstract Book getBookByFile(ZLFile file);
 	public abstract Book getBookById(long id);
+
+	public abstract void reloadInfoFromDatabase(Book book);
 
 	public static final int REMOVE_DONT_REMOVE = 0x00;
 	public static final int REMOVE_FROM_LIBRARY = 0x01;
@@ -104,4 +108,7 @@ public abstract class AbstractLibrary {
 
 	public abstract List<Bookmark> allBookmarks();
 	public abstract List<Bookmark> invisibleBookmarks(Book book);
+
+	public abstract ZLTextPosition getStoredPosition(Book book);
+	public abstract void storePosition(Book book, ZLTextPosition position);
 }

@@ -25,6 +25,8 @@ import android.os.RemoteException;
 
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 
+import org.geometerplus.zlibrary.text.view.ZLTextPosition;
+
 import org.geometerplus.fbreader.library.*;
 
 public class LibraryShadow extends AbstractLibrary {
@@ -43,14 +45,24 @@ public class LibraryShadow extends AbstractLibrary {
 		}
 	}
 
+	@Override
 	public Book getBookByFile(ZLFile file) {
+		//try {
+			//return new BookShadow(myInterface.getBookByFile(file.getPath()));
+		//} catch (RemoteException e) {
+			return null;
+		//}
+	}
+
+	@Override
+	public Book getBookById(long id) {
 		// TODO: implement
 		return null;
 	}
 
-	public Book getBookById(long id) {
+	@Override
+	public void reloadInfoFromDatabase(Book book) {
 		// TODO: implement
-		return null;
 	}
 
 	@Override
@@ -112,5 +124,16 @@ public class LibraryShadow extends AbstractLibrary {
 	public List<Bookmark> invisibleBookmarks(Book book) {
 		// TODO: implement
 		return null;
+	}
+
+	@Override
+	public ZLTextPosition getStoredPosition(Book book) {
+		// TODO: implement
+		return null;
+	}
+
+	@Override
+	public void storePosition(Book book, ZLTextPosition position) {
+		// TODO: implement
 	}
 }
