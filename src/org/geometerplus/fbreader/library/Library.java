@@ -87,33 +87,6 @@ public abstract class Library extends AbstractLibrary {
 		return parentTree != null ? (LibraryTree)parentTree.getSubTree(key.Id) : null;
 	}
 
-	protected ZLResourceFile getHelpFile() {
-		final Locale locale = Locale.getDefault();
-
-		ZLResourceFile file = ZLResourceFile.createResourceFile(
-			"data/help/MiniHelp." + locale.getLanguage() + "_" + locale.getCountry() + ".fb2"
-		);
-		if (file.exists()) {
-			return file;
-		}
-
-		file = ZLResourceFile.createResourceFile(
-			"data/help/MiniHelp." + locale.getLanguage() + ".fb2"
-		);
-		if (file.exists()) {
-			return file;
-		}
-
-		return ZLResourceFile.createResourceFile("data/help/MiniHelp.en.fb2");
-	}
-
-	public abstract Book getBookByFile(ZLFile file);
-	public abstract Book getBookById(long id);
-
-	public Book getHelpBook() {
-		return getBookByFile(getHelpFile());
-	}
-
 	private final List<?> myNullList = Collections.singletonList(null);
 
 	private LibraryTree getTagTree(Tag tag) {
@@ -337,9 +310,6 @@ public abstract class Library extends AbstractLibrary {
 
 		return true;
 	}
-
-	public abstract List<Bookmark> allBookmarks();
-	public abstract List<Bookmark> invisibleBookmarks(Book book);
 
 	protected void _treeSetRecentList(Collection<Book> books) {
 		for (Book b : books) {
