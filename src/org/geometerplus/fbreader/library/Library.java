@@ -289,21 +289,21 @@ public abstract class Library extends AbstractLibrary {
 	}
 
 	@Override
-	public void addBookToFavorites(Book book) {
+	public boolean addBookToFavorites(Book book) {
 		if (isBookInFavorites(book)) {
-			return;
+			return false;
 		}
-		final LibraryTree rootFavorites = getFirstLevelTree(ROOT_FAVORITES);
-		rootFavorites.getBookSubTree(book, true);
-		myDatabase.addToFavorites(book.getId());
+		getFirstLevelTree(ROOT_FAVORITES).getBookSubTree(book, true);
+		return true;
 	}
 
 	@Override
-	public void removeBookFromFavorites(Book book) {
+	public boolean removeBookFromFavorites(Book book) {
 		if (getFirstLevelTree(ROOT_FAVORITES).removeBook(book, false)) {
-			myDatabase.removeFromFavorites(book.getId());
 			fireModelChangedEvent(ChangeListener.Code.BookRemoved);
+			return true;
 		}
+		return false;
 	}
 
 	@Override
@@ -322,25 +322,52 @@ public abstract class Library extends AbstractLibrary {
 	}
 
 	@Override
-	public void removeBook(Book book, int removeMode) {
+	public boolean removeBook(Book book, int removeMode) {
 		if (removeMode == REMOVE_DONT_REMOVE) {
-			return;
+			return false;
 		}
 		myBooks.remove(book);
-		if (getFirstLevelTree(ROOT_RECENT).removeBook(book, false)) {
-			final List<Long> ids = myDatabase.loadRecentBookIds();
-			ids.remove(book.getId());
-			myDatabase.saveRecentBookIds(ids);
-		}
+		getFirstLevelTree(ROOT_RECENT).removeBook(book, false);
 		getFirstLevelTree(ROOT_FAVORITES).removeBook(book, false);
 		myRootTree.removeBook(book, true);
 
-		myDatabase.deleteFromBookList(book.getId());
 		if ((removeMode & REMOVE_FROM_DISK) != 0) {
 			book.File.getPhysicalFile().delete();
 		}
+
+		return true;
 	}
 
 	public abstract List<Bookmark> allBookmarks();
 	public abstract List<Bookmark> invisibleBookmarks(Book book);
+
+	protected void _treeSetRecentList(Collection<Book> books) {
+		for (Book b : books) {
+			new BookTree(getFirstLevelTree(ROOT_RECENT), b, true);
+		}
+	}
+
+	protected void _treeSetFavoritesList(Collection<Book> books) {
+		for (Book b : books) {
+			getFirstLevelTree(ROOT_FAVORITES).getBookSubTree(b, true);
+		}
+	}
+
+	protected void _treeRemoveOrphanedBook(Book book) {
+		myRootTree.removeBook(book, true);
+		fireModelChangedEvent(ChangeListener.Code.BookRemoved);
+	}
+
+	protected void _treeSetParameters(Collection<? extends Book> books) {
+		if (books.size() > 10) {
+			final HashSet<String> letterSet = new HashSet<String>();
+			for (Book b : books) {
+				final String letter = TitleTree.firstTitleLetter(b);
+				if (letter != null) {
+					letterSet.add(letter);
+				}
+			}
+			myDoGroupTitlesByFirstLetter = books.size() > letterSet.size() * 5 / 4;
+		}
+	}
 }

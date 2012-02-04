@@ -56,6 +56,21 @@ public class DBLibrary extends Library {
 	}
 
 	@Override
+	public boolean removeBook(Book book, int removeMode) {
+		if (super.removeBook(book, removeMode)) {
+			final List<Long> ids = myDatabase.loadRecentBookIds();
+			if (ids.remove(book.getId())) {
+				myDatabase.saveRecentBookIds(ids);
+			}
+			myDatabase.removeFromFavorites(book.getId());
+			myDatabase.deleteFromBookList(book.getId());
+
+			return true;
+		}
+		return false;
+	}
+
+	@Override
 	public void addBookToRecentList(Book book) {
 		final List<Long> ids = myDatabase.loadRecentBookIds();
 		final Long bookId = book.getId();
@@ -65,6 +80,24 @@ public class DBLibrary extends Library {
 			ids.remove(12);
 		}
 		myDatabase.saveRecentBookIds(ids);
+	}
+
+	@Override
+	public boolean addBookToFavorites(Book book) {
+		if (super.addBookToFavorites(book)) {
+			myDatabase.addToFavorites(book.getId());
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean removeBookFromFavorites(Book book) {
+		if (super.removeBookFromFavorites(book)) {
+			myDatabase.removeFromFavorites(book.getId());
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -98,19 +131,11 @@ public class DBLibrary extends Library {
 			savedBooksByBookId.put(b.getId(), b);
 		}
 
-		// Step 1: set myDoGroupTitlesByFirstLetter value,
+		// Step 1: set tree parameters,
         // add "existing" books into recent and favorites lists
-		if (savedBooksByFileId.size() > 10) {
-			final HashSet<String> letterSet = new HashSet<String>();
-			for (DBBook book : savedBooksByFileId.values()) {
-				final String letter = TitleTree.firstTitleLetter(book);
-				if (letter != null) {
-					letterSet.add(letter);
-				}
-			}
-			myDoGroupTitlesByFirstLetter = savedBooksByFileId.values().size() > letterSet.size() * 5 / 4;
-		}
+		_treeSetParameters(savedBooksByFileId.values());
 
+		final List<Book> recentList = new LinkedList<Book>();
 		for (long id : myDatabase.loadRecentBookIds()) {
 			DBBook book = savedBooksByBookId.get(id);
 			if (book == null) {
@@ -120,10 +145,12 @@ public class DBLibrary extends Library {
 				}
 			}
 			if (book != null) {
-				new BookTree(getFirstLevelTree(ROOT_RECENT), book, true);
+				recentList.add(book);
 			}
 		}
+		_treeSetRecentList(recentList);
 
+		final List<Book> favoritesList = new LinkedList<Book>();
 		for (long id : myDatabase.loadFavoritesIds()) {
 			DBBook book = savedBooksByBookId.get(id);
 			if (book == null) {
@@ -133,9 +160,10 @@ public class DBLibrary extends Library {
 				}
 			}
 			if (book != null) {
-				getFirstLevelTree(ROOT_FAVORITES).getBookSubTree(book, true);
+				favoritesList.add(book);
 			}
 		}
+		_treeSetFavoritesList(favoritesList);
 
 		fireModelChangedEvent(ChangeListener.Code.BookAdded);
 
@@ -168,8 +196,7 @@ public class DBLibrary extends Library {
 						}
 					}
 				} else {
-					myRootTree.removeBook(book, true);
-					fireModelChangedEvent(ChangeListener.Code.BookRemoved);
+					_treeRemoveOrphanedBook(book);
 					orphanedBooks.add(book);
 				}
 			}
