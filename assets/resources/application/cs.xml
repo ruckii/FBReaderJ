@@ -348,6 +348,29 @@
 			</node>
 			<node name="text" value="Text">
 				<node name="summary" value="Písmo, dělení slov atd."/>
+				<node name="fontProperties" value="Font properties" toBeTranslated="true">
+					<node name="summary" value="Font smoothing options" toBeTranslated="true"/>
+					<node name="antiAlias" value="Antialiasing" toBeTranslated="true">
+						<node name="summaryOn" value="Antialiasing is enabled" toBeTranslated="true"/>
+						<node name="summaryOff" value="Antialiasing is disabled" toBeTranslated="true"/>
+					</node>
+					<node name="deviceKerning" value="Device kerning" toBeTranslated="true">
+						<node name="summaryOn" value="Device kerning is enabled" toBeTranslated="true"/>
+						<node name="summaryOff" value="Device kerning is disabled" toBeTranslated="true"/>
+					</node>
+					<node name="dithering" value="Dithering" toBeTranslated="true">
+						<node name="summaryOn" value="Color dithering is enabled" toBeTranslated="true"/>
+						<node name="summaryOff" value="Color dithering is disabled" toBeTranslated="true"/>
+					</node>
+					<node name="hinting" value="Hinting" toBeTranslated="true">
+						<node name="summaryOn" value="Font hinting is enabled" toBeTranslated="true"/>
+						<node name="summaryOff" value="Font hinting is disabled" toBeTranslated="true"/>
+					</node>
+					<node name="subpixel" value="Subpixel smoothing" toBeTranslated="true">
+						<node name="summaryOn" value="Subpixel smoothing is enabled" toBeTranslated="true"/>
+						<node name="summaryOff" value="Subpixel smoothing is disabled" toBeTranslated="true"/>
+					</node>
+				</node>
 				<node name="font" value="Rodina písem">
 					<node name="unchanged" value="&lt;nezměněno&gt;"/>
 				</node>
@@ -360,13 +383,13 @@
 					<node name="boldItalic" value="Tučná kurzíva"/>
 				</node>
 				<node name="bold" value="Tučně">
-					<node name="on" value="tučně"/>
-					<node name="off" value="obyčejné"/>
+					<node name="summaryOn" value="tučně"/>
+					<node name="summaryOff" value="obyčejné"/>
 					<node name="unchanged" value="&lt;nezměněno&gt;"/>
 				</node>
 				<node name="italic" value="Kurzíva">
-					<node name="on" value="kurzíva"/>
-					<node name="off" value="obyčejné"/>
+					<node name="summaryOn" value="kurzíva"/>
+					<node name="summaryOff" value="obyčejné"/>
 					<node name="unchanged" value="&lt;nezměněno&gt;"/>
 				</node>
 				<node name="lineSpacing" value="Řádkování">
@@ -384,8 +407,8 @@
 					<node name="summaryOff" value="Nedělit slova automaticky"/>
 				</node>
 				<node name="allowHyphenations" value="Povolit dělení slov">
-					<node name="on" value="dělit slova"/>
-					<node name="off" value="nedělit slova"/>
+					<node name="summaryOn" value="dělit slova"/>
+					<node name="summaryOff" value="nedělit slova"/>
 					<node name="unchanged" value="&lt;nezměněno&gt;"/>
 				</node>
 				<node name="firstLineIndent" value="Odsazení prvního řádku"/>
