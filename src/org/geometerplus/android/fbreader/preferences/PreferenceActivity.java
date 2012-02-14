@@ -31,6 +31,7 @@ import org.geometerplus.zlibrary.text.view.style.*;
 
 import org.geometerplus.zlibrary.ui.android.library.ZLAndroidLibrary;
 import org.geometerplus.zlibrary.ui.android.view.AndroidFontUtil;
+import org.geometerplus.zlibrary.ui.android.view.ZLAndroidPaintContext;
 
 import org.geometerplus.fbreader.fbreader.*;
 import org.geometerplus.fbreader.Paths;
@@ -95,6 +96,16 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 		appearanceScreen.addOption(androidLibrary.DisableButtonLightsOption, "disableButtonLights");
 
 		final Screen textScreen = createPreferenceScreen("text");
+
+		final Screen fontPropertiesScreen = textScreen.createPreferenceScreen("fontProperties");
+		fontPropertiesScreen.addOption(ZLAndroidPaintContext.AntiAliasOption, "antiAlias");
+		fontPropertiesScreen.addOption(ZLAndroidPaintContext.DeviceKerningOption, "deviceKerning");
+		fontPropertiesScreen.addOption(ZLAndroidPaintContext.DitheringOption, "dithering");
+		if (ZLAndroidPaintContext.usesHintingOption()) {
+			fontPropertiesScreen.addOption(ZLAndroidPaintContext.HintingOption, "hinting");
+		}
+		fontPropertiesScreen.addOption(ZLAndroidPaintContext.SubpixelOption, "subpixel");
+
 		final ZLTextStyleCollection collection = ZLTextStyleCollection.Instance();
 		final ZLTextBaseStyle baseStyle = collection.getBaseStyle();
 		textScreen.addPreference(new FontOption(
@@ -109,6 +120,8 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 			this, textScreen.Resource, "fontStyle",
 			baseStyle.BoldOption, baseStyle.ItalicOption
 		));
+		textScreen.addOption(baseStyle.UnderlineOption, "underlined");
+		textScreen.addOption(baseStyle.StrikeThroughOption, "strikedThrough");
 		final ZLIntegerRangeOption spaceOption = baseStyle.LineSpaceOption;
 		final String[] spacings = new String[spaceOption.MaxValue - spaceOption.MinValue + 1];
 		for (int i = 0; i < spacings.length; ++i) {
@@ -183,6 +196,14 @@ public class PreferenceActivity extends ZLPreferenceActivity {
 			formatScreen.addPreference(new ZLBoolean3Preference(
 				this, textScreen.Resource, "italic",
 				decoration.ItalicOption
+			));
+			formatScreen.addPreference(new ZLBoolean3Preference(
+				this, textScreen.Resource, "underlined",
+				decoration.UnderlineOption
+			));
+			formatScreen.addPreference(new ZLBoolean3Preference(
+				this, textScreen.Resource, "strikedThrough",
+				decoration.StrikeThroughOption
 			));
 			if (fullDecoration != null) {
 				final String[] allAlignments = { "unchanged", "left", "right", "center", "justify" };
