@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2012 Geometer Plus <contact@geometerplus.com>
+ * Copyright (C) 2011-2012 Geometer Plus <contact@geometerplus.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,12 @@
  * 02110-1301, USA.
  */
 
-package org.geometerplus.zlibrary.text.model;
+package org.geometerplus.fbreader.bookmodel;
 
-public interface ZLTextAlignmentType {
-	byte ALIGN_UNDEFINED = 0;
-	byte ALIGN_LEFT = 1;
-	byte ALIGN_RIGHT = 2;
-	byte ALIGN_CENTER = 3;
-	byte ALIGN_JUSTIFY = 4;
-	byte ALIGN_LINESTART = 5; // left for LTR languages and right for RTL
+import org.geometerplus.fbreader.library.Book;
+
+public class NativeBookModel extends BookModel {
+	NativeBookModel(Book book) {
+		super(book);
+	}
 }
