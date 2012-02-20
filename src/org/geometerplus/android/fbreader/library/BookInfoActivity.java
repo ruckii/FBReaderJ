@@ -62,6 +62,7 @@ public class BookInfoActivity extends Activity implements MenuItem.OnMenuItemCli
 
 	private final ZLResource myResource = ZLResource.resource("bookInfo");
 	private ZLFile myFile;
+	private int myResult;
 	private boolean myDontReloadBook;
 
 	@Override
@@ -88,7 +89,8 @@ public class BookInfoActivity extends Activity implements MenuItem.OnMenuItemCli
 		}
 		setContentView(R.layout.book_info);
 
-		setResult(1, intent);
+		myResult = FBReader.RESULT_DO_NOTHING;
+		setResult(myResult, intent);
 	}
 
 	@Override
@@ -116,6 +118,9 @@ public class BookInfoActivity extends Activity implements MenuItem.OnMenuItemCli
 			setupBookInfo(book);
 			myDontReloadBook = false;
 		}
+
+		myResult = Math.max(myResult, resultCode);
+		setResult(myResult);
 	}
 
 	private Button findButton(int buttonId) {

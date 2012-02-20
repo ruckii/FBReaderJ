@@ -17,13 +17,18 @@
  * 02110-1301, USA.
  */
 
-package org.geometerplus.zlibrary.text.model;
+package org.geometerplus.fbreader.formats;
 
-public interface ZLTextAlignmentType {
-	byte ALIGN_UNDEFINED = 0;
-	byte ALIGN_LEFT = 1;
-	byte ALIGN_RIGHT = 2;
-	byte ALIGN_CENTER = 3;
-	byte ALIGN_JUSTIFY = 4;
-	byte ALIGN_LINESTART = 5; // left for LTR languages and right for RTL
+import org.geometerplus.fbreader.library.Book;
+
+public abstract class JavaFormatPlugin extends FormatPlugin {
+	@Override
+	public boolean readLanguageAndEncoding(Book book) {
+		return true;
+	}
+
+	@Override
+	public Type type() {
+		return Type.JAVA;
+	}
 }
