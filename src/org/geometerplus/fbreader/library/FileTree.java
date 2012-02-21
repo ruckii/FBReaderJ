@@ -108,9 +108,18 @@ public class FileTree extends LibraryTree {
 		return myFile;
 	}
 
+	private Object myBook;
+	private static final Object NULL_BOOK = new Object();
+
 	@Override
 	public Book getBook() {
-		return myLibrary.getBookByFile(myFile);
+		if (myBook == null) {
+			myBook = myLibrary.getByFile(myFile);
+			if (myBook == null) {
+				myBook = NULL_BOOK;
+			}
+		}
+		return myBook instanceof Book ? (Book)myBook : null;
 	}
 
 	@Override
