@@ -19,20 +19,12 @@
 
 package org.geometerplus.zlibrary.core.image;
 
-import java.io.InputStream;
+import java.util.HashMap;
 
-import org.geometerplus.zlibrary.core.util.MimeType;
+public final class ZLPlainImageMap extends HashMap<String,ZLImage> implements ZLImageMap {
+	private static final long serialVersionUID = -4488377408233803199L;
 
-public abstract class ZLSingleImage implements ZLImage {
-	private final MimeType myMimeType;
-
-	public ZLSingleImage(final MimeType mimeType) {
-		myMimeType = mimeType;
-	}
-
-	public abstract InputStream inputStream();
-
-	public final MimeType mimeType() {
-		return myMimeType;
+	public ZLImage getImage(String id) {
+		return (ZLImage)super.get(id);
 	}
 }
