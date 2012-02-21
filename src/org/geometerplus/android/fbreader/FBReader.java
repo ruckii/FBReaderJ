@@ -375,7 +375,7 @@ public final class FBReader extends ZLAndroidActivity {
 				break;
 			}
 			case RESULT_RELOAD_BOOK:
-				// TODO: implement
+				fbReader.reloadBook();
 				break;
 		}
 	}
