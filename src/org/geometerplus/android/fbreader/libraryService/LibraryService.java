@@ -50,6 +50,10 @@ public class LibraryService extends Service implements Library.ChangeListener {
 		public BookObject getBookByFile(String path) {
 			return new BookObject(myBaseLibrary.getBookByFile(ZLFile.createFileByPath(path)));
 		}
+
+		public BookObject getRecentBook() {
+			return new BookObject(myBaseLibrary.getRecentBook());
+		}
 	}
 
 	private LibraryImplementation myLibrary;
