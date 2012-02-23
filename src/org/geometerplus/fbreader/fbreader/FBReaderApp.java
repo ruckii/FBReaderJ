@@ -164,7 +164,7 @@ public final class FBReaderApp extends ZLApplication {
  
 	public void reloadBook() {
 		if (Model != null && Model.Book != null) {
-			Model.Book.reloadInfoFromDatabase();
+			DBLibrary.Instance().reloadInfoFromDatabase(Model.Book);
 			runWithMessage("loadingBook", new Runnable() {
 				public void run() {
 					openBookInternal(Model.Book, null);
