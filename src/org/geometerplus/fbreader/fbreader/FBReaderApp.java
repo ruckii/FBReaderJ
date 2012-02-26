@@ -137,7 +137,7 @@ public final class FBReaderApp extends ZLApplication {
 		setView(BookTextView);
 	}
 
-	public void openBook(Book book, final Bookmark bookmark) {
+	public void openBook(Book book, final Bookmark bookmark, final Runnable postAction) {
 		if (book == null) {
 			if (Model == null) {
 				book = DBLibrary.Instance().getRecentBook();
@@ -159,7 +159,7 @@ public final class FBReaderApp extends ZLApplication {
 			public void run() {
 				openBookInternal(bookToOpen, bookmark);
 			}
-		});
+		}, postAction);
 	}
  
 	public void reloadBook() {
@@ -169,7 +169,7 @@ public final class FBReaderApp extends ZLApplication {
 				public void run() {
 					openBookInternal(Model.Book, null);
 				}
-			});
+			}, null);
 		}
 	}
 
@@ -302,8 +302,8 @@ public final class FBReaderApp extends ZLApplication {
 	}
 
 	@Override
-	public void openFile(ZLFile file) {
-		openBook(createBookForFile(file), null);
+	public void openFile(ZLFile file, Runnable postAction) {
+		openBook(createBookForFile(file), null, postAction);
 	}
 
 	public void onWindowClosing() {
@@ -374,7 +374,7 @@ public final class FBReaderApp extends ZLApplication {
 		final CancelActionDescription description = myCancelActionsList.get(index);
 		switch (description.Type) {
 			case previousBook:
-				openBook(DBLibrary.Instance().getPreviousBook(), null);
+				openBook(DBLibrary.Instance().getPreviousBook(), null, null);
 				break;
 			case returnTo:
 			{

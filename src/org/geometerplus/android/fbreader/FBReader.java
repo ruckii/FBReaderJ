@@ -106,10 +106,19 @@ public final class FBReader extends ZLAndroidActivity {
 	}
 
 	@Override
+	protected Runnable getPostponedInitAction() {
+		return new Runnable() {
+			public void run() {
+				initPluginActions();
+				new TipRunner().start();
+				DictionaryUtil.init(FBReader.this);
+			}
+		};
+	}
+
+	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-
-		DictionaryUtil.init(this);
 
 		final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
 		final ZLAndroidLibrary zlibrary = (ZLAndroidLibrary)ZLibrary.Instance();
@@ -246,7 +255,10 @@ public final class FBReader extends ZLAndroidActivity {
 		((PopupPanel)fbReader.getPopupById(TextSearchPopup.ID)).setPanelInfo(this, root);
 		((PopupPanel)fbReader.getPopupById(NavigationPopup.ID)).setPanelInfo(this, root);
 		((PopupPanel)fbReader.getPopupById(SelectionPopup.ID)).setPanelInfo(this, root);
+	}
 
+	private void initPluginActions() {
+		final FBReaderApp fbReader = (FBReaderApp)FBReaderApp.Instance();
 		synchronized (myPluginActions) {
 			int index = 0;
 			while (index < myPluginActions.size()) {
@@ -264,8 +276,6 @@ public final class FBReader extends ZLAndroidActivity {
 			null,
 			null
 		);
-
-		new TipRunner().start();
 	}
 
 	private class TipRunner extends Thread {
