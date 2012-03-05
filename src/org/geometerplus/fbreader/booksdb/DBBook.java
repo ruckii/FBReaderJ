@@ -82,7 +82,7 @@ public class DBBook extends Book {
 
 		final FormatPlugin plugin = PluginCollection.Instance().getPlugin(File);
 		if (plugin == null) {
-			return fasle;
+			return false;
 		}
 		try {
 			plugin.readMetaInfo(this);
