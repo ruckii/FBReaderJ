@@ -32,6 +32,7 @@ import org.geometerplus.zlibrary.text.hyphenation.ZLTextHyphenator;
 import org.geometerplus.zlibrary.text.view.*;
 
 import org.geometerplus.fbreader.bookmodel.BookModel;
+import org.geometerplus.fbreader.bookmodel.BookReadingException;
 import org.geometerplus.fbreader.bookmodel.TOCTree;
 import org.geometerplus.fbreader.library.*;
 import org.geometerplus.fbreader.booksdb.DBLibrary;
@@ -245,8 +246,8 @@ public final class FBReaderApp extends ZLApplication {
 			Model = null;
 			System.gc();
 			System.gc();
-			Model = BookModel.createModel(book);
-			if (Model != null) {
+			try {
+				Model = BookModel.createModel(book);
 				ZLTextHyphenator.Instance().load(book.getLanguage());
 				BookTextView.setModel(Model.getTextModel());
 				BookTextView.gotoPosition(DBLibrary.Instance().getStoredPosition(book));
@@ -267,6 +268,8 @@ public final class FBReaderApp extends ZLApplication {
 					title.append(")");
 				}
 				setTitle(title.toString());
+			} catch (BookReadingException e) {
+				e.printStackTrace();
 			}
 		}
 		getViewWidget().repaint();
@@ -295,7 +298,7 @@ public final class FBReaderApp extends ZLApplication {
 				return false;
 			}
 
-			final List<Bookmark> bookmarks = Bookmark.invisibleBookmarks(Model.Book);
+			final List<Bookmark> bookmarks = DBLibrary.Instance().invisibleBookmarks(Model.Book);
 			if (bookmarks.isEmpty()) {
 				System.err.println("jump back F5");
 				return false;
