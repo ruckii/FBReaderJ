@@ -29,6 +29,7 @@ import org.geometerplus.zlibrary.text.view.ZLTextPosition;
 import org.geometerplus.fbreader.library.*;
 import org.geometerplus.fbreader.formats.*;
 import org.geometerplus.fbreader.Paths;
+import org.geometerplus.fbreader.bookmodel.BookReadingException;
 
 public class DBBook extends Book {
 	private long myId;
@@ -80,7 +81,12 @@ public class DBBook extends Book {
 		myIsSaved = false;
 
 		final FormatPlugin plugin = PluginCollection.Instance().getPlugin(File);
-		if (plugin == null || !plugin.readMetaInfo(this)) {
+		if (plugin == null) {
+			return false;
+		}
+		try {
+			plugin.readMetaInfo(this);
+		} catch (BookReadingException e) {
 			return false;
 		}
 		if (myTitle == null || myTitle.length() == 0) {
