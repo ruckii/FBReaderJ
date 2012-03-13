@@ -77,7 +77,7 @@ public class FileTree extends LibraryTree {
 
 	@Override
 	protected String getStringId() {
-		return myFile.getPath();
+		return myFile.getShortName();
 	}
 
 	@Override
