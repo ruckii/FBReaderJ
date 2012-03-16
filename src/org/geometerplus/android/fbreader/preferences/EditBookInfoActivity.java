@@ -32,11 +32,8 @@ import org.geometerplus.zlibrary.text.hyphenation.ZLTextHyphenator;
 
 import org.geometerplus.fbreader.library.AbstractLibrary;
 import org.geometerplus.fbreader.library.Book;
-<<<<<<< HEAD
 import org.geometerplus.fbreader.booksdb.*;
-=======
 import org.geometerplus.fbreader.formats.*;
->>>>>>> ice-cream-sandwich
 
 import org.geometerplus.android.fbreader.FBReader;
 import org.geometerplus.android.fbreader.library.BookInfoActivity;
