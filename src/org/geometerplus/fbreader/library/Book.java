@@ -97,6 +97,7 @@ public abstract class Book {
 	public abstract String getLanguage();
 	public abstract void setLanguage(String language);
 	public abstract String getEncoding();
+	public abstract String getEncodingNoDetection();
 	public abstract void setEncoding(String encoding);
 
 	public abstract List<Tag> tags();
