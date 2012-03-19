@@ -158,6 +158,23 @@ public class DBBook extends Book {
 
 	@Override
 	public String getEncoding() {
+		if (myEncoding == null) {
+			final FormatPlugin plugin = PluginCollection.Instance().getPlugin(File);
+				if (plugin != null) {
+				try {
+					plugin.detectLanguageAndEncoding(this);
+				} catch (BookReadingException e) {
+				}
+				if (myEncoding == null) {
+					setEncoding("utf-8");
+				}
+			}
+		}
+		return myEncoding;
+	}
+
+	@Override
+	public String getEncodingNoDetection() {
 		return myEncoding;
 	}
 
