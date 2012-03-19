@@ -117,13 +117,13 @@ public class LibraryShadow extends AbstractLibrary {
 	@Override
 	public List<Bookmark> allBookmarks() {
 		// TODO: implement
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override
 	public List<Bookmark> invisibleBookmarks(Book book) {
 		// TODO: implement
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override
