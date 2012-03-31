@@ -249,16 +249,6 @@ jobject AndroidUtil::createJavaImage(JNIEnv *env, const ZLFileImage &image) {
 	return javaImage;
 }
 
-std::string AndroidUtil::fromJavaString(JNIEnv *env, jstring from) {
-	if (from == 0) {
-		return std::string();
-	}
-	const char *data = env->GetStringUTFChars(from, 0);
-	const std::string result(data);
-	env->ReleaseStringUTFChars(from, data);
-	return result;
-}
-
 jstring AndroidUtil::createJavaString(JNIEnv* env, const std::string &str) {
 	if (str.empty()) {
 		return 0;
@@ -278,9 +268,8 @@ std::string AndroidUtil::convertNonUtfString(const std::string &str) {
 	for (int i = 0; i < len; ++i) {
 		chars[i] = str[i];
 	}
-	jstring javaString = env->NewString(chars, len);
-	const std::string result = fromJavaString(env, javaString);
-	env->DeleteLocalRef(javaString);
+	JavaLocalString javaString(env, env->NewString(chars, len));
+	const std::string result = javaString.cppString();
 	delete[] chars;
 
 	return result;

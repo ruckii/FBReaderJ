@@ -28,6 +28,43 @@ const JavaPrimitiveType JavaPrimitiveType::Int("I");
 const JavaPrimitiveType JavaPrimitiveType::Long("J");
 const JavaPrimitiveType JavaPrimitiveType::Boolean("Z");
 
+JavaLocalString::JavaLocalString(JNIEnv *env, jstring s) {
+	myEnv = env;
+	myReference = s;
+}
+
+JavaLocalString::JavaLocalString(const JavaLocalString &orig) {
+	myEnv = orig.myEnv;
+	myReference = orig.myReference != 0 ? (jstring)myEnv->NewLocalRef(orig.myReference) : 0;
+}
+
+void JavaLocalString::operator = (const JavaLocalString &orig) {
+	if (myReference != 0) {
+		myEnv->DeleteLocalRef(myReference);
+	}
+	myReference = orig.myReference != 0 ? (jstring)myEnv->NewLocalRef(orig.myReference) : 0;
+}
+
+JavaLocalString::~JavaLocalString() {
+	if (myReference != 0) {
+		myEnv->DeleteLocalRef(myReference);
+	}
+}
+
+jstring JavaLocalString::jString() const {
+	return myReference;
+}
+
+std::string JavaLocalString::cppString() const {
+	if (myReference == 0) {
+		return std::string();
+	}
+	const char *data = myEnv->GetStringUTFChars(myReference, 0);
+	const std::string result(data);
+	myEnv->ReleaseStringUTFChars(myReference, data);
+	return result;
+}
+
 JavaType::JavaType() {
 }
 
@@ -72,19 +109,19 @@ Member::~Member() {
 }
 
 Constructor::Constructor(const JavaClass &cls, const std::string &parameters) : Member(cls) {
-	myId = env().GetMethodID(jClass(), "<init>", parameters.c_str());
+	myId = env()->GetMethodID(jClass(), "<init>", parameters.c_str());
 }
 
 jobject Constructor::call(...) {
 	va_list lst;
 	va_start(lst, this);
-	jobject obj = env().NewObjectV(jClass(), myId, lst);
+	jobject obj = env()->NewObjectV(jClass(), myId, lst);
 	va_end(lst);
 	return obj;
 }
 
 Field::Field(const JavaClass &cls, const std::string &name, const JavaType &type) : Member(cls), myName(name) {
-	myId = env().GetFieldID(jClass(), name.c_str(), type.code().c_str());
+	myId = env()->GetFieldID(jClass(), name.c_str(), type.code().c_str());
 }
 
 Field::~Field() {
@@ -92,7 +129,7 @@ Field::~Field() {
 
 Method::Method(const JavaClass &cls, const std::string &name, const JavaType &returnType, const std::string &parameters) : Member(cls), myName(name) {
 	const std::string signature = parameters + returnType.code();
-	myId = env().GetMethodID(jClass(), name.c_str(), signature.c_str());
+	myId = env()->GetMethodID(jClass(), name.c_str(), signature.c_str());
 }
 
 Method::~Method() {
@@ -100,7 +137,7 @@ Method::~Method() {
 
 StaticMethod::StaticMethod(const JavaClass &cls, const std::string &name, const JavaType &returnType, const std::string &parameters) : Member(cls), myName(name) {
 	const std::string signature = parameters + returnType.code();
-	myId = env().GetStaticMethodID(jClass(), name.c_str(), signature.c_str());
+	myId = env()->GetStaticMethodID(jClass(), name.c_str(), signature.c_str());
 }
 
 StaticMethod::~StaticMethod() {
@@ -111,7 +148,7 @@ ObjectField::ObjectField(const JavaClass &cls, const std::string &name, const Ja
 
 jobject ObjectField::value(jobject obj) const {
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "getting value of ObjectField " + myName);
-	jobject val = env().GetObjectField(obj, myId);
+	jobject val = env()->GetObjectField(obj, myId);
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "got value of ObjectField " + myName);
 	return val;
 }
@@ -123,7 +160,7 @@ void VoidMethod::call(jobject base, ...) {
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "calling VoidMethod " + myName);
 	va_list lst;
 	va_start(lst, base);
-	env().CallVoidMethodV(base, myId, lst);
+	env()->CallVoidMethodV(base, myId, lst);
 	va_end(lst);
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "finished VoidMethod " + myName);
 }
@@ -135,7 +172,7 @@ jint IntMethod::call(jobject base, ...) {
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "calling IntMethod " + myName);
 	va_list lst;
 	va_start(lst, base);
-	jint result = env().CallIntMethodV(base, myId, lst);
+	jint result = env()->CallIntMethodV(base, myId, lst);
 	va_end(lst);
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "finished IntMethod " + myName);
 	return result;
@@ -148,7 +185,7 @@ jlong LongMethod::call(jobject base, ...) {
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "calling LongMethod " + myName);
 	va_list lst;
 	va_start(lst, base);
-	jlong result = env().CallLongMethodV(base, myId, lst);
+	jlong result = env()->CallLongMethodV(base, myId, lst);
 	va_end(lst);
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "finished LongMethod " + myName);
 	return result;
@@ -161,7 +198,7 @@ jboolean BooleanMethod::call(jobject base, ...) {
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "calling BooleanMethod " + myName);
 	va_list lst;
 	va_start(lst, base);
-	jboolean result = env().CallBooleanMethodV(base, myId, lst);
+	jboolean result = env()->CallBooleanMethodV(base, myId, lst);
 	va_end(lst);
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "finished BooleanMethod " + myName);
 	return result;
@@ -172,14 +209,14 @@ static JavaPrimitiveType FakeString("Ljava/lang/String;");
 StringMethod::StringMethod(const JavaClass &cls, const std::string &name, const std::string &parameters) : Method(cls, name, FakeString, parameters) {
 }
 
-jstring StringMethod::call(jobject base, ...) {
+JavaLocalString StringMethod::call(jobject base, ...) {
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "calling StringMethod " + myName);
 	va_list lst;
 	va_start(lst, base);
-	jstring result = (jstring)env().CallObjectMethodV(base, myId, lst);
+	jstring result = (jstring)env()->CallObjectMethodV(base, myId, lst);
 	va_end(lst);
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "finished StringMethod " + myName);
-	return result;
+	return JavaLocalString(env(), result);
 }
 
 ObjectMethod::ObjectMethod(const JavaClass &cls, const std::string &name, const JavaClass &returnType, const std::string &parameters) : Method(cls, name, returnType, parameters) {
@@ -189,7 +226,7 @@ jobject ObjectMethod::call(jobject base, ...) {
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "calling ObjectMethod " + myName);
 	va_list lst;
 	va_start(lst, base);
-	jobject result = env().CallObjectMethodV(base, myId, lst);
+	jobject result = env()->CallObjectMethodV(base, myId, lst);
 	va_end(lst);
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "finished ObjectMethod " + myName);
 	return result;
@@ -202,7 +239,7 @@ jobjectArray ObjectArrayMethod::call(jobject base, ...) {
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "calling ObjectArrayMethod " + myName);
 	va_list lst;
 	va_start(lst, base);
-	jobjectArray result = (jobjectArray)env().CallObjectMethodV(base, myId, lst);
+	jobjectArray result = (jobjectArray)env()->CallObjectMethodV(base, myId, lst);
 	va_end(lst);
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "finished ObjectArrayMethod " + myName);
 	return result;
@@ -215,7 +252,7 @@ jobject StaticObjectMethod::call(...) {
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "calling StaticObjectMethod " + myName);
 	va_list lst;
 	va_start(lst, this);
-	jobject result = env().CallStaticObjectMethodV(jClass(), myId, lst);
+	jobject result = env()->CallStaticObjectMethodV(jClass(), myId, lst);
 	va_end(lst);
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "finished StaticObjectMethod " + myName);
 	return result;

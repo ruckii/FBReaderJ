@@ -474,16 +474,13 @@ std::string ZLUnicodeUtil::toLower(const std::string &utf8String) {
 
 	JNIEnv *env = AndroidUtil::getEnv();
 	jstring javaString = AndroidUtil::createJavaString(env, utf8String);
-	jstring lowerCased = AndroidUtil::Method_java_lang_String_toLowerCase->call(javaString);
-	if (javaString == lowerCased) {
-		env->DeleteLocalRef(lowerCased);
+	JavaLocalString lowerCased = AndroidUtil::Method_java_lang_String_toLowerCase->call(javaString);
+	if (javaString == lowerCased.jString()) {
 		env->DeleteLocalRef(javaString);
 		return utf8String;
 	} else {
-		const std::string result = AndroidUtil::fromJavaString(env, lowerCased);
-		env->DeleteLocalRef(lowerCased);
 		env->DeleteLocalRef(javaString);
-		return result;
+		return lowerCased.cppString();
 	}
 }
 
@@ -518,15 +515,12 @@ std::string ZLUnicodeUtil::toUpper(const std::string &utf8String) {
 
 	JNIEnv *env = AndroidUtil::getEnv();
 	jstring javaString = AndroidUtil::createJavaString(env, utf8String);
-	jstring upperCased = AndroidUtil::Method_java_lang_String_toUpperCase->call(javaString);
-	if (javaString == upperCased) {
-		env->DeleteLocalRef(upperCased);
+	JavaLocalString upperCased = AndroidUtil::Method_java_lang_String_toUpperCase->call(javaString);
+	if (javaString == upperCased.jString()) {
 		env->DeleteLocalRef(javaString);
 		return utf8String;
 	} else {
-		const std::string result = AndroidUtil::fromJavaString(env, upperCased);
-		env->DeleteLocalRef(upperCased);
 		env->DeleteLocalRef(javaString);
-		return result;
+		return upperCased.cppString();
 	}
 }

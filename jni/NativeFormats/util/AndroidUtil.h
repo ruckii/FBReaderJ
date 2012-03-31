@@ -143,7 +143,6 @@ public:
 	static bool init(JavaVM* jvm);
 	static JNIEnv *getEnv();
 
-	static std::string fromJavaString(JNIEnv *env, jstring from);
 	static jstring createJavaString(JNIEnv* env, const std::string &str);
 	static std::string convertNonUtfString(const std::string &str);
 

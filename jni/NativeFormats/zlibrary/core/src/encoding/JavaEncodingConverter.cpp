@@ -84,11 +84,11 @@ JavaEncodingConverter::~JavaEncodingConverter() {
 }
 
 std::string JavaEncodingConverter::name() const {
-	JNIEnv *env = AndroidUtil::getEnv();
-	jstring javaName = (jstring)AndroidUtil::Field_EncodingConverter_Name->value(myJavaConverter);
-	const std::string result = AndroidUtil::fromJavaString(env, javaName);
-	env->DeleteLocalRef(javaName);
-	return result;
+	JavaLocalString javaName(
+		AndroidUtil::getEnv(),
+		(jstring)AndroidUtil::Field_EncodingConverter_Name->value(myJavaConverter)
+	);
+	return javaName.cppString();
 }
 
 void JavaEncodingConverter::convert(std::string &dst, const char *srcStart, const char *srcEnd) {

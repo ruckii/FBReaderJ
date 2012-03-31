@@ -29,12 +29,11 @@
 #include "fbreader/src/library/Tag.h"
 
 static shared_ptr<FormatPlugin> findCppPlugin(JNIEnv *env, jobject base) {
-	jstring fileTypeJava = AndroidUtil::Method_NativeFormatPlugin_supportedFileType->call(base);
-	const std::string fileTypeCpp = AndroidUtil::fromJavaString(env, fileTypeJava);
-	env->DeleteLocalRef(fileTypeJava);
-	shared_ptr<FormatPlugin> plugin = PluginCollection::Instance().pluginByType(fileTypeCpp);
+	const std::string fileType =
+		 AndroidUtil::Method_NativeFormatPlugin_supportedFileType->call(base).cppString();
+	shared_ptr<FormatPlugin> plugin = PluginCollection::Instance().pluginByType(fileType);
 	if (plugin.isNull()) {
-		AndroidUtil::throwRuntimeException(env, "Native FormatPlugin instance is NULL for type " + fileTypeCpp);
+		AndroidUtil::throwRuntimeException(env, "Native FormatPlugin instance is NULL for type " + fileType);
 	}
 	return plugin;
 }
@@ -290,9 +289,7 @@ JNIEXPORT void JNICALL Java_org_geometerplus_fbreader_formats_NativeFormatPlugin
 		return;
 	}
 
-	jstring javaPath = AndroidUtil::Method_ZLFile_getPath->call(file);
-	const std::string path = AndroidUtil::fromJavaString(env, javaPath);
-	env->DeleteLocalRef(javaPath);
+	const std::string path = AndroidUtil::Method_ZLFile_getPath->call(file).cppString();
 
 	shared_ptr<ZLImage> image = plugin->coverImage(ZLFile(path));
 	if (!image.isNull()) {

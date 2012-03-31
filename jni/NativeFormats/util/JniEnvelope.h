@@ -24,6 +24,22 @@
 
 #include <string>
 
+class JavaLocalString {
+
+public:
+	JavaLocalString(JNIEnv *env, jstring s);
+	~JavaLocalString();
+	JavaLocalString(const JavaLocalString &orig);
+	void operator = (const JavaLocalString &orig);
+
+	jstring jString() const;
+	std::string cppString() const;
+
+private:
+	JNIEnv *myEnv;
+	jstring myReference;
+};
+
 class JavaType {
 
 protected:
@@ -87,7 +103,7 @@ class Member {
 
 protected:
 	Member(const JavaClass &cls);
-	JNIEnv &env() const;
+	JNIEnv *env() const;
 	jclass jClass() const;
 
 public:
@@ -183,7 +199,7 @@ class StringMethod : public Method {
 
 public:
 	StringMethod(const JavaClass &cls, const std::string &name, const std::string &parameters);
-	jstring call(jobject base, ...);
+	JavaLocalString call(jobject base, ...);
 };
 
 class ObjectMethod : public Method {
@@ -207,7 +223,7 @@ public:
 	jobject call(...);
 };
 
-inline JNIEnv &Member::env() const { return *myClass.myEnv; }
+inline JNIEnv *Member::env() const { return myClass.myEnv; }
 inline jclass Member::jClass() const { return myClass.j(); }
 
 inline JavaPrimitiveType::JavaPrimitiveType(const std::string &code) : myCode(code) {}
