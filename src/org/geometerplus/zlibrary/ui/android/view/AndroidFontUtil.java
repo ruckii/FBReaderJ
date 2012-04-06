@@ -33,23 +33,15 @@ public final class AndroidFontUtil {
 	private static Map<String,File[]> ourFontMap;
 	private static Set<File> ourFileSet;
 	private static long myTimeStamp;
-	public static Map<String,File[]> getFontMap(boolean forceReload) {
-		if (ourFontCreationMethod == null) {
-			return Collections.emptyMap();
-		}
 
+	public static Map<String,File[]> getFontMap(boolean forceReload) {
 		final long timeStamp = System.currentTimeMillis();
 		if (forceReload && timeStamp < myTimeStamp + 1000) {
 			forceReload = false;
 		}
 		myTimeStamp = timeStamp;
-<<<<<<< HEAD
-		if (ourFontMap == null || forceReload) {
-			boolean rebuildMap = ourFontMap == null;
-=======
 		if (ourFileSet == null || forceReload) {
 			final HashSet<File> fileSet = new HashSet<File>();
->>>>>>> booksdb
 			final File[] fileList = new File(Paths.FontsDirectoryOption().getValue()).listFiles(
 				new FilenameFilter() {
 					public boolean accept(File dir, String name) {
@@ -61,27 +53,12 @@ public final class AndroidFontUtil {
 					}
 				}
 			);
-<<<<<<< HEAD
-			if (fileList == null) {
-				if (ourFileList != null) {
-					ourFileList = null;
-					rebuildMap = true;
-				}
-			}
-			if (fileList != null && !fileList.equals(ourFileList)) {
-				ourFileList = fileList;
-				rebuildMap = true;
-			}
-			if (rebuildMap) {
-				ourFontMap = new ZLTTFInfoDetector().collectFonts(fileList);
-=======
 			if (fileList != null) {
 				fileSet.addAll(Arrays.asList(fileList));
 			}
 			if (!fileSet.equals(ourFileSet)) {
 				ourFileSet = fileSet;
 				ourFontMap = new ZLTTFInfoDetector().collectFonts(fileSet);
->>>>>>> booksdb
 			}
 		}
 		return ourFontMap;
