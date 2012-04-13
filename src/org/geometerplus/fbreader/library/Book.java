@@ -188,9 +188,10 @@ public abstract class Book {
 			}
 		}
 		ZLImage image = null;
-		final FormatPlugin plugin = PluginCollection.Instance().getPlugin(File);
-		if (plugin != null) {
-			image = plugin.readCover(File);
+		try {
+			image = getPlugin().readCover(File);
+		} catch (BookReadingException e) {
+			// ignore
 		}
 		myCover = image != null ? new WeakReference<ZLImage>(image) : NULL_IMAGE;
 		return image;
