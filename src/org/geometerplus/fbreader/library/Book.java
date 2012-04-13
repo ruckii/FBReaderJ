@@ -42,9 +42,10 @@ public abstract class Book {
 	private static final WeakReference<ZLImage> NULL_IMAGE = new WeakReference<ZLImage>(null);
 	private WeakReference<ZLImage> myCover;
 
-	protected Book(ZLFile file) {
-		File = file;
-		readMetaInfo();
+	protected Book(ZLFile file) throws BookReadingException {
+		final FormatPlugin plugin = getPlugin(file);
+		File = plugin.realBookFile(file);
+		readMetaInfo(plugin);
 	}
 
 	public void reloadInfoFromFile() {
@@ -59,6 +60,22 @@ public abstract class Book {
 	protected abstract boolean readMetaInfo();
 
 	public abstract long getId();
+
+	private FormatPlugin getPlugin(ZLFile file) throws BookReadingException {
+		final FormatPlugin plugin = PluginCollection.Instance().getPlugin(file);
+		if (plugin == null) {
+			throw new BookReadingException("pluginNotFound", file);
+		}
+		return plugin;
+	}
+
+	public FormatPlugin getPlugin() throws BookReadingException {
+		return getPlugin(File);
+	}
+
+	void readMetaInfo() throws BookReadingException {
+		readMetaInfo(getPlugin());
+	}
 
 	public abstract String getTitle();
 	public abstract void setTitle(String title);
