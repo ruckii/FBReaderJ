@@ -44,11 +44,15 @@ public abstract class Book {
 
 	protected Book(ZLFile file) {
 		File = file;
+		readMetaInfo();
 	}
 
 	public void reloadInfoFromFile() {
-		if (readMetaInfo()) {
+		try {
+			readMetaInfo();
 			save();
+		} catch (BookReadingException e) {
+			// ignore
 		}
 	}
 
