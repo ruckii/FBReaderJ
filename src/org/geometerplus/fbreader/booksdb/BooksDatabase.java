@@ -51,8 +51,8 @@ public abstract class BooksDatabase {
 	protected void addTag(DBBook book, Tag tag) {
 		book.addTagWithNoCheck(tag);
 	}
-	protected void setSeriesInfo(DBBook book, String series, float index) {
-		book.setSeriesInfoWithNoCheck(series, index);
+	protected void setSeriesInfo(Book book, String series, String index) {
+		book.setSeriesInfoWithNoCheck(series, SeriesInfo.createIndex(index));
 	}
 
 	protected abstract void executeAsATransaction(Runnable actions);

@@ -20,6 +20,7 @@
 package org.geometerplus.fbreader.library;
 
 import java.lang.ref.WeakReference;
+import java.math.BigDecimal;
 import java.util.*;
 import java.io.InputStream;
 import java.io.IOException;
