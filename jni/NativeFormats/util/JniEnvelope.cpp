@@ -174,14 +174,15 @@ static JavaPrimitiveType FakeString("Ljava/lang/String;");
 StringMethod::StringMethod(const JavaClass &cls, const std::string &name, const std::string &parameters) : Method(cls, name, FakeString, parameters) {
 }
 
-jstring StringMethod::callForJavaString(jobject base, ...) {
+shared_ptr<LocalJavaString> StringMethod::callForJavaString(jobject base, ...) {
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "calling StringMethod " + myName);
+	JNIEnv *env = AndroidUtil::getEnv();
 	va_list lst;
 	va_start(lst, base);
-	jstring result = (jstring)AndroidUtil::getEnv()->CallObjectMethodV(base, myId, lst);
+	jstring result = (jstring)env->CallObjectMethodV(base, myId, lst);
 	va_end(lst);
 	ZLLogger::Instance().println(JNI_LOGGER_CLASS, "finished StringMethod " + myName);
-	return result;
+	return new LocalJavaString(env, result);
 }
 
 std::string StringMethod::callForCppString(jobject base, ...) {

@@ -24,6 +24,31 @@
 
 #include <string>
 
+#include <shared_ptr.h>
+
+class LocalJavaObject {
+
+public:
+	LocalJavaObject(JNIEnv *env, jobject o);
+	virtual ~LocalJavaObject();
+	jobject j() const;
+
+private:
+	JNIEnv *myEnv;
+	jobject myObject;
+
+private:
+	LocalJavaObject(const LocalJavaObject&);
+	const LocalJavaObject &operator = (const LocalJavaObject&);
+};
+
+class LocalJavaString : public LocalJavaObject {
+
+public:
+	LocalJavaString(JNIEnv *env, jstring s);
+	jstring j() const;
+};
+
 class JavaType {
 
 protected:
@@ -181,7 +206,7 @@ class StringMethod : public Method {
 
 public:
 	StringMethod(const JavaClass &cls, const std::string &name, const std::string &parameters);
-	jstring callForJavaString(jobject base, ...);
+	shared_ptr<LocalJavaString> callForJavaString(jobject base, ...);
 	std::string callForCppString(jobject base, ...);
 };
 
