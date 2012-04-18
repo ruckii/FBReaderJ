@@ -143,7 +143,7 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 		} else {
 			super.onActivityResult(requestCode, returnCode, intent);
 		}
-	} 
+	}
 
 	//
 	// Search
@@ -179,7 +179,7 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 		final int position = ((AdapterView.AdapterContextMenuInfo)menuInfo).position;
 		final Book book = ((LibraryTree)getListAdapter().getItem(position)).getBook();
 		if (book != null) {
-			createBookContextMenu(menu, book); 
+			createBookContextMenu(menu, book);
 		}
 	}
 
