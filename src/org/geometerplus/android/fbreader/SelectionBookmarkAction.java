@@ -34,18 +34,18 @@ public class SelectionBookmarkAction extends FBAndroidAction {
 	}
 
 	@Override
-    protected void run(Object ... params) {
+	protected void run(Object ... params) {
 		final FBView fbview = Reader.getTextView();
 		final String text = fbview.getSelectedText();
 
 		new DBBookmark(
 			Reader.Model.Book,
 			fbview.getModel().getId(),
-			fbview.getSelectionStartPosition(), 
+			fbview.getSelectionStartPosition(),
 			text,
 			true
 		).save();
-        fbview.clearSelection();
+		fbview.clearSelection();
 
 		UIUtil.showMessageText(
 			BaseActivity,
