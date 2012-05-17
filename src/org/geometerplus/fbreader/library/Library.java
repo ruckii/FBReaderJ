@@ -36,7 +36,8 @@ public abstract class Library extends AbstractLibrary {
 	public static final String ROOT_BY_TAG = "byTag";
 	public static final String ROOT_FILE_TREE = "fileTree";
 
-	private final List<Book> myBooks = Collections.synchronizedList(new LinkedList<Book>());
+	private final Map<ZLFile,Book> myBooks =
+		Collections.synchronizedMap(new HashMap<ZLFile,Book>());
 	private final RootTree myRootTree = new RootTree();
 	private boolean myDoGroupTitlesByFirstLetter;
 
@@ -97,7 +98,10 @@ public abstract class Library extends AbstractLibrary {
 	}
 
 	protected synchronized void addBookToLibrary(Book book) {
-		myBooks.add(book);
+		if (myBooks.containsKey(book.File)) {
+			return;
+		}
+		myBooks.put(book.File, book);
 
 		List<Author> authors = book.authors();
 		if (authors.isEmpty()) {
@@ -174,7 +178,7 @@ public abstract class Library extends AbstractLibrary {
 			return;
 		}
 
-		myBooks.remove(book);
+		myBooks.remove(book.File);
 		refreshInTree(ROOT_FAVORITES, book);
 		refreshInTree(ROOT_RECENT, book);
 		removeFromTree(ROOT_FOUND, book);
@@ -224,7 +228,7 @@ public abstract class Library extends AbstractLibrary {
 		FirstLevelTree newSearchResults = null;
 		final List<Book> booksCopy;
 		synchronized (myBooks) {
-			booksCopy = new ArrayList<Book>(myBooks);
+			booksCopy = new ArrayList<Book>(myBooks.values());
 		}
 		for (Book book : booksCopy) {
 			if (book.matches(pattern)) {
@@ -298,8 +302,12 @@ public abstract class Library extends AbstractLibrary {
 		if (removeMode == REMOVE_DONT_REMOVE) {
 			return false;
 		}
-		myBooks.remove(book);
-		getFirstLevelTree(ROOT_RECENT).removeBook(book, false);
+		myBooks.remove(book.File);
+		if (getFirstLevelTree(ROOT_RECENT).removeBook(book, false)) {
+			final List<Long> ids = myDatabase.loadRecentBookIds();
+			ids.remove(book.getId());
+			myDatabase.saveRecentBookIds(ids);
+		}
 		getFirstLevelTree(ROOT_FAVORITES).removeBook(book, false);
 		myRootTree.removeBook(book, true);
 
