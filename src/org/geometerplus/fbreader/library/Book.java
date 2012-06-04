@@ -83,7 +83,7 @@ public abstract class Book {
 
 	public abstract List<Author> authors();
 	public abstract void addAuthor(Author author);
-	public void removeAllAuthors();
+	public abstract void removeAllAuthors();
 
 	public void addAuthor(String name) {
 		addAuthor(name, "");
