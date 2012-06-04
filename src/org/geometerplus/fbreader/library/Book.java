@@ -82,7 +82,8 @@ public abstract class Book {
 	public abstract void setTitle(String title);
 
 	public abstract List<Author> authors();
-	protected abstract void addAuthor(Author author);
+	public abstract void addAuthor(Author author);
+	public void removeAllAuthors();
 
 	public void addAuthor(String name) {
 		addAuthor(name, "");
