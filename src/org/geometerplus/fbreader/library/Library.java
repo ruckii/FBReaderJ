@@ -44,18 +44,23 @@ public abstract class Library extends AbstractLibrary {
 	protected final static int STATUS_LOADING = 1;
 	protected final static int STATUS_SEARCHING = 2;
 	private volatile int myStatusMask = 0;
+	private final Object myStatusLock = new Object();
 
-	protected synchronized void addStatusFlags(int flags) {
-		if ((myStatusMask & flags) != flags) {
-			myStatusMask = myStatusMask | flags;
-			fireModelChangedEvent(ChangeListener.Code.StatusChanged);
+	protected void addStatusFlags(int flags) {
+		synchronized (myStatusLock) {
+			if ((myStatusMask & flags) != flags) {
+				myStatusMask = myStatusMask | flags;
+				fireModelChangedEvent(ChangeListener.Code.StatusChanged);
+			}
 		}
 	}
 
-	protected synchronized void removeStatusFlags(int flags) {
-		if ((myStatusMask & flags) != 0) {
-			myStatusMask = myStatusMask & ~flags;
-			fireModelChangedEvent(ChangeListener.Code.StatusChanged);
+	protected void removeStatusFlags(int flags) {
+		synchronized (myStatusLock) {
+			if ((myStatusMask & flags) != 0) {
+				myStatusMask = myStatusMask & ~flags;
+				fireModelChangedEvent(ChangeListener.Code.StatusChanged);
+			}
 		}
 	}
 
