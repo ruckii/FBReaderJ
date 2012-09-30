@@ -26,6 +26,7 @@ class ShowTOCAction extends RunActivityAction {
 		super(baseActivity, fbreader, TOCActivity.class);
 	}
 
+	@Override
 	public boolean isVisible() {
 		return (Reader.Model != null) && Reader.Model.TOCTree.hasChildren();
 	}

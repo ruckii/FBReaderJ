@@ -30,6 +30,7 @@ import org.geometerplus.fbreader.network.tree.SearchCatalogTree;
 import org.geometerplus.zlibrary.ui.android.R;
 
 import org.geometerplus.android.fbreader.network.NetworkLibraryActivity;
+import org.geometerplus.android.fbreader.tree.TreeActivity;
 
 public class RunSearchAction extends Action {
 	public static SearchCatalogTree getSearchTree(FBTree tree) {
@@ -68,7 +69,7 @@ public class RunSearchAction extends Action {
 	public void run(NetworkTree tree) {
 		final Bundle bundle = new Bundle();
 		bundle.putSerializable(
-			NetworkLibraryActivity.TREE_KEY_KEY,
+			TreeActivity.TREE_KEY_KEY,
 			getSearchTree(tree).getUniqueKey()
 		);
 		final NetworkLibrary library = NetworkLibrary.Instance();

@@ -32,7 +32,7 @@ public class LibraryService extends Service implements Library.ChangeListener {
 		private final AbstractLibrary myBaseLibrary;
 
 		LibraryImplementation() {
-			BooksDatabase database = SQLiteBooksDatabase.Instance();
+			BooksDatabase database = BooksDatabase.Instance();
 			if (database == null) {
 				database = new SQLiteBooksDatabase(LibraryService.this, "LIBRARY SERVICE");
 			}

@@ -20,6 +20,7 @@
 package org.geometerplus.android.fbreader;
 
 import android.app.Application;
+import android.content.Context;
 import android.text.ClipboardManager;
 
 import org.geometerplus.zlibrary.core.resources.ZLResource;
@@ -39,7 +40,7 @@ public class SelectionCopyAction extends FBAndroidAction {
 		Reader.getTextView().clearSelection();
 
 		final ClipboardManager clipboard =
-			(ClipboardManager)BaseActivity.getApplication().getSystemService(Application.CLIPBOARD_SERVICE);
+			(ClipboardManager)BaseActivity.getApplication().getSystemService(Context.CLIPBOARD_SERVICE);
 		clipboard.setText(text);
 		UIUtil.showMessageText(
 			BaseActivity,

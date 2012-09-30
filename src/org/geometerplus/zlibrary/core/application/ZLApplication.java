@@ -243,6 +243,7 @@ public abstract class ZLApplication {
 			myRunnable = runnable;
 		}
 
+		@Override
 		public void run() {
 			myRunnable.run();
 		}

@@ -175,7 +175,7 @@ public class LitResBookshelfItem extends NetworkURLCatalogItem {
 		// TODO: Maybe it's better to call isAuthorised(true) directly 
 		// and let exception fly through???
 		if (!mgr.mayBeAuthorised(true)) {
-			throw new ZLNetworkException(NetworkException.ERROR_AUTHENTICATION_FAILED);
+			throw new ZLNetworkException(ZLNetworkException.ERROR_AUTHENTICATION_FAILED);
 		}
 		try {
 			if (myForceReload) {

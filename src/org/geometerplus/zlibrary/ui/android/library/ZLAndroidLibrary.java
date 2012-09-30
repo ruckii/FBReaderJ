@@ -21,14 +21,11 @@ package org.geometerplus.zlibrary.ui.android.library;
 
 import java.io.*;
 import java.util.*;
-import java.lang.reflect.Field;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.res.AssetFileDescriptor;
-import android.graphics.Point;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.format.DateFormat;

@@ -52,6 +52,7 @@ public abstract class UIUtil {
 		}
 		try {
 			ourProgressHandler = new Handler() {
+				@Override
 				public void handleMessage(Message message) {
 					try {
 						synchronized (ourMonitor) {
@@ -116,6 +117,7 @@ public abstract class UIUtil {
 				final ProgressDialog progress = ProgressDialog.show(activity, null, message, true, false);
             
 				final Thread runner = new Thread() {
+					@Override
 					public void run() {
 						action.run();
 						activity.runOnUiThread(new Runnable() {

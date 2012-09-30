@@ -24,6 +24,7 @@ import android.app.SearchManager;
 import android.os.Bundle;
 import android.content.Intent;
 
+import org.geometerplus.android.fbreader.tree.TreeActivity;
 import org.geometerplus.fbreader.network.NetworkLibrary;
 import org.geometerplus.fbreader.network.NetworkTree;
 import org.geometerplus.fbreader.network.tree.SearchCatalogTree;
@@ -41,7 +42,7 @@ public class NetworkSearchActivity extends Activity {
 			if (data != null) {
 				final NetworkLibrary library = NetworkLibrary.Instance();
 				final NetworkTree.Key key =
-					(NetworkTree.Key)data.getSerializable(NetworkLibraryActivity.TREE_KEY_KEY);
+					(NetworkTree.Key)data.getSerializable(TreeActivity.TREE_KEY_KEY);
 				final NetworkTree tree = library.getTreeByKey(key);
 				if (tree instanceof SearchCatalogTree) {
 					((SearchCatalogTree)tree).startItemsLoader(

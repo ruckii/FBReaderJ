@@ -37,7 +37,6 @@ final class ZLTreeResource extends ZLResource {
 			myValue = value;
 		}
 
-		@Override
 		public boolean accepts(int number) {
 			return myValue == number;
 		}
@@ -52,7 +51,6 @@ final class ZLTreeResource extends ZLResource {
 			myMax = max;
 		}
 
-		@Override
 		public boolean accepts(int number) {
 			return myMin <= number && number <= myMax;
 		}
@@ -69,7 +67,6 @@ final class ZLTreeResource extends ZLResource {
 			myBase = base;
 		}
 
-		@Override
 		public boolean accepts(int number) {
 			number = number % myBase;
 			return myMin <= number && number <= myMax;
@@ -85,7 +82,6 @@ final class ZLTreeResource extends ZLResource {
 			myBase = base;
 		}
 
-		@Override
 		public boolean accepts(int number) {
 			return number % myBase == myMod;
 		}

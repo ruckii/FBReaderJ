@@ -22,7 +22,6 @@ package org.geometerplus.fbreader.network.opds;
 import java.util.*;
 
 import org.geometerplus.zlibrary.core.constants.XMLNamespaces;
-import org.geometerplus.zlibrary.core.filesystem.ZLResourceFile;
 import org.geometerplus.zlibrary.core.util.MimeType;
 import org.geometerplus.zlibrary.core.xml.ZLStringMap;
 
@@ -139,7 +138,7 @@ class OPDSLinkXMLReader extends OPDSXMLReader implements OPDSConstants {
 			final String summaryString = summary != null ? summary.toString() : null;
 
 			OPDSNetworkLink opdsLink = new OPDSPredefinedNetworkLink(
-				OPDSNetworkLink.INVALID_ID,
+				INetworkLink.INVALID_ID,
 				id,
 				siteName,
 				titleString,

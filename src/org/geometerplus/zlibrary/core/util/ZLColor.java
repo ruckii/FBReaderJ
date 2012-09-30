@@ -44,6 +44,7 @@ public final class ZLColor {
 		return (Red << 16) + (Green << 8) + Blue;
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (o == this) { 
 			return true;
@@ -57,6 +58,7 @@ public final class ZLColor {
 		return (color.Red == Red) && (color.Green == Green) && (color.Blue == Blue);
 	}
 
+	@Override
 	public int hashCode() {
 		return getIntValue();
 	}

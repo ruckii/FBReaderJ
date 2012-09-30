@@ -31,7 +31,7 @@ import android.view.MenuItem;
 
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.application.ZLApplicationWindow;
-import org.geometerplus.zlibrary.core.filesystem.ZLFile;
+import org.geometerplus.zlibrary.core.library.ZLibrary;
 import org.geometerplus.zlibrary.core.resources.ZLResource;
 import org.geometerplus.zlibrary.core.view.ZLViewWidget;
 
@@ -97,7 +97,7 @@ public final class ZLAndroidApplicationWindow extends ZLApplicationWindow {
 	@Override
 	public void runWithMessage(String key, Runnable action, Runnable postAction) {
 		final Activity activity = 
-			((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getActivity();
+			((ZLAndroidLibrary)ZLibrary.Instance()).getActivity();
 		if (activity != null) {
 			UIUtil.runWithMessage(activity, key, action, postAction, false);
 		} else {
@@ -110,7 +110,7 @@ public final class ZLAndroidApplicationWindow extends ZLApplicationWindow {
 		exception.printStackTrace();
 
 		final Activity activity = 
-			((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getActivity();
+			((ZLAndroidLibrary)ZLibrary.Instance()).getActivity();
 		final Intent intent = new Intent(
 			"android.fbreader.action.ERROR",
 			new Uri.Builder().scheme(exception.getClass().getSimpleName()).build()
@@ -138,7 +138,7 @@ public final class ZLAndroidApplicationWindow extends ZLApplicationWindow {
 	@Override
 	public void setTitle(final String title) {
 		final Activity activity = 
-			((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getActivity();
+			((ZLAndroidLibrary)ZLibrary.Instance()).getActivity();
 		if (activity != null) {
 			activity.runOnUiThread(new Runnable() {
 				public void run() {
@@ -148,15 +148,18 @@ public final class ZLAndroidApplicationWindow extends ZLApplicationWindow {
 		}
 	}
 
+	@Override
 	protected ZLViewWidget getViewWidget() {
-		return ((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).getWidget();
+		return ((ZLAndroidLibrary)ZLibrary.Instance()).getWidget();
 	}
 
+	@Override
 	public void close() {
-		((ZLAndroidLibrary)ZLAndroidLibrary.Instance()).finish();
+		((ZLAndroidLibrary)ZLibrary.Instance()).finish();
 	}
 
 	private int myBatteryLevel;
+	@Override
 	protected int getBatteryLevel() {
 		return myBatteryLevel;
 	}

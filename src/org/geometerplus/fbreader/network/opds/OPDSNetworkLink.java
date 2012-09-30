@@ -28,8 +28,6 @@ import java.io.UnsupportedEncodingException;
 import org.geometerplus.zlibrary.core.network.ZLNetworkException;
 import org.geometerplus.zlibrary.core.network.ZLNetworkRequest;
 import org.geometerplus.zlibrary.core.util.MimeType;
-import org.geometerplus.zlibrary.core.util.ZLMiscUtil;
-
 import org.geometerplus.fbreader.network.*;
 import org.geometerplus.fbreader.network.authentication.NetworkAuthenticationManager;
 import org.geometerplus.fbreader.network.urlInfo.*;
@@ -149,7 +147,7 @@ public abstract class OPDSNetworkLink extends AbstractNetworkLink {
 			getSummary(),
 			urlMap,
 			OPDSCatalogItem.Accessibility.ALWAYS,
-			OPDSCatalogItem.FLAGS_DEFAULT | OPDSCatalogItem.FLAG_ADD_SEARCH_ITEM,
+			NetworkCatalogItem.FLAGS_DEFAULT | NetworkCatalogItem.FLAG_ADD_SEARCH_ITEM,
 			myExtraData
 		);
 	}

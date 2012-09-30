@@ -35,6 +35,7 @@ final class ZLTextTeXHyphenator extends ZLTextHyphenator {
 	}
 
 	private List<String> myLanguageCodes;
+	@Override
 	public List<String> languageCodes() {
 		if (myLanguageCodes == null) {
 			final TreeSet<String> codes = new TreeSet<String>();
@@ -53,6 +54,7 @@ final class ZLTextTeXHyphenator extends ZLTextHyphenator {
 		return Collections.unmodifiableList(myLanguageCodes);
 	}
 
+	@Override
 	public void load(String language) {
 		if (language == null || ZLLanguageUtil.OTHER_LANGUAGE_CODE.equals(language)) {
 			language = ZLLanguageUtil.defaultLanguageCode();
@@ -70,10 +72,12 @@ final class ZLTextTeXHyphenator extends ZLTextHyphenator {
 		}
 	}
 
+	@Override
 	public void unload() {
 		myPatternTable.clear();
 	}
 
+	@Override
 	public void hyphenate(char[] stringToHyphenate, boolean[] mask, int length) {
 		if (myPatternTable.isEmpty()) {
 			for (int i = 0; i < length - 1; i++) {
@@ -94,7 +98,7 @@ final class ZLTextTeXHyphenator extends ZLTextHyphenator {
 				pattern.myLength = len;
 				pattern.myHashCode = 0;
 				ZLTextTeXHyphenationPattern toApply =
-					(ZLTextTeXHyphenationPattern)table.get(pattern);
+					table.get(pattern);
 				if (toApply != null) {
 					toApply.apply(values, offset);
 				}

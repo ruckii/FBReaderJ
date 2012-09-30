@@ -102,7 +102,7 @@ public abstract class PackageUtil {
 		String pluginName = pluginData.get("androidPlugin");
 		if (pluginName == null) {
 			final TelephonyManager telephony =
-				(TelephonyManager)activity.getSystemService(Activity.TELEPHONY_SERVICE);
+				(TelephonyManager)activity.getSystemService(Context.TELEPHONY_SERVICE);
 			if (telephony != null &&
 				(telephony.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM ||
 				 telephony.getPhoneType() == TelephonyManager.PHONE_TYPE_CDMA)) {

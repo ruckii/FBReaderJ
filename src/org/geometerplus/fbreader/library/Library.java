@@ -445,6 +445,7 @@ public final class Library extends AbstractLibrary {
 
 		setStatus(myStatusMask | STATUS_LOADING);
 		final Thread builder = new Thread("Library.build") {
+			@Override
 			public void run() {
 				try {
 					build();
@@ -478,6 +479,7 @@ public final class Library extends AbstractLibrary {
 	public void startBookSearch(final String pattern) {
 		setStatus(myStatusMask | STATUS_SEARCHING);
 		final Thread searcher = new Thread("Library.searchBooks") {
+			@Override
 			public void run() {
 				try {
 					searchBooks(pattern);

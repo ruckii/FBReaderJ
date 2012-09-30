@@ -140,10 +140,12 @@ abstract class ZLTreeAdapter extends BaseAdapter implements AdapterView.OnItemCl
 		return item;
 	}
 
+	@Override
 	public final boolean areAllItemsEnabled() {
 		return true;
 	}
 
+	@Override
 	public final boolean isEnabled(int position) {
 		return true;
 	}

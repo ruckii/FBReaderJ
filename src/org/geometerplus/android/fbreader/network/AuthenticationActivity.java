@@ -32,8 +32,6 @@ import android.widget.Button;
 import org.geometerplus.zlibrary.core.resources.ZLResource;
 import org.geometerplus.zlibrary.core.network.ZLNetworkManager;
 import org.geometerplus.zlibrary.core.network.ZLNetworkException;
-import org.geometerplus.zlibrary.core.options.ZLStringOption;
-
 import org.geometerplus.fbreader.network.INetworkLink;
 import org.geometerplus.fbreader.network.NetworkLibrary;
 import org.geometerplus.fbreader.network.authentication.NetworkAuthenticationManager;
@@ -255,6 +253,7 @@ public class AuthenticationActivity extends Activity {
 		if (myOkButtonUpdater == null) {
 			myOkButtonUpdater = new Timer();
 			myOkButtonUpdater.schedule(new TimerTask() {
+				@Override
 				public void run() {
 					runOnUiThread(new Runnable() {
 						public void run() {

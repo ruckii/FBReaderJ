@@ -23,17 +23,12 @@ import java.util.*;
 
 import android.content.*;
 import android.net.Uri;
-import android.view.*;
-import android.widget.*;
-
 import org.geometerplus.zlibrary.core.money.Money;
 
 import org.geometerplus.fbreader.network.INetworkLink;
 import org.geometerplus.fbreader.network.NetworkLibrary;
 import org.geometerplus.fbreader.network.urlInfo.UrlInfo;
 import org.geometerplus.fbreader.network.authentication.NetworkAuthenticationManager;
-
-import org.geometerplus.zlibrary.ui.android.R;
 
 import org.geometerplus.android.util.PackageUtil;
 

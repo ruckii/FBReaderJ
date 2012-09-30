@@ -83,7 +83,6 @@ class CoverHolder {
 						return;
 					}
 					myManager.runOnUiThread(new Runnable() {
-						@Override
 						public void run() {
 							synchronized (CoverHolder.this) {
 								if (Key.equals(myKey)) {
@@ -146,7 +145,6 @@ class CoverHolder {
 				*/
 				myManager.Cache.putBitmap(myKey, coverBitmap);
 				myManager.runOnUiThread(new Runnable() {
-					@Override
 					public void run() {
 						synchronized (CoverHolder.this) {
 							if (Key.equals(myKey)) {

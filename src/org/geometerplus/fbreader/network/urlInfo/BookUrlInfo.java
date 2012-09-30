@@ -161,6 +161,7 @@ public class BookUrlInfo extends UrlInfo {
 		return null;
 	}
 
+	@Override
 	public String toString() {
 		return "BookReference[type=" + InfoType + ";format=" + BookFormat + ";URL=" + Url + "]";
 	}

@@ -37,6 +37,7 @@ import android.widget.*;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
 import org.geometerplus.zlibrary.core.filesystem.ZLPhysicalFile;
 import org.geometerplus.zlibrary.core.image.ZLImage;
+import org.geometerplus.zlibrary.core.image.ZLImageManager;
 import org.geometerplus.zlibrary.core.image.ZLLoadableImage;
 import org.geometerplus.zlibrary.core.resources.ZLResource;
 import org.geometerplus.zlibrary.core.language.ZLLanguageUtil;
@@ -73,7 +74,7 @@ public class BookInfoActivity extends Activity {
 		myDontReloadBook = getIntent().getBooleanExtra(FROM_READING_MODE_KEY, false);
 		myFile = ZLFile.createFileByPath(path);
 
-		if (SQLiteBooksDatabase.Instance() == null) {
+		if (BooksDatabase.Instance() == null) {
 			new SQLiteBooksDatabase(this, "LIBRARY");
 		}
 
@@ -201,7 +202,7 @@ public class BookInfoActivity extends Activity {
 			}
 		}
 		final ZLAndroidImageData data =
-			((ZLAndroidImageManager)ZLAndroidImageManager.Instance()).getImageData(image);
+			((ZLAndroidImageManager)ZLImageManager.Instance()).getImageData(image);
 		if (data == null) {
 			return;
 		}

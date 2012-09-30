@@ -29,6 +29,7 @@ import android.content.*;
 
 import org.geometerplus.zlibrary.core.util.ZLMiscUtil;
 import org.geometerplus.zlibrary.core.resources.ZLResource;
+import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.options.ZLStringOption;
 
 import org.geometerplus.zlibrary.ui.android.R;
@@ -79,7 +80,7 @@ public class BookmarksActivity extends TabActivity implements MenuItem.OnMenuIte
 
 		AllBooksBookmarks = Library.Instance().allBookmarks();
 		Collections.sort(AllBooksBookmarks, new Bookmark.ByTimeComparator());
-		final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
+		final FBReaderApp fbreader = (FBReaderApp)ZLApplication.Instance();
 
 		if (fbreader.Model != null) {
 			final long bookId = fbreader.Model.Book.getId();
@@ -208,7 +209,7 @@ public class BookmarksActivity extends TabActivity implements MenuItem.OnMenuIte
 	}
 
 	private void addBookmark() {
-		final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
+		final FBReaderApp fbreader = (FBReaderApp)ZLApplication.Instance();
 		final Bookmark bookmark = fbreader.addBookmark(20, true);
 		if (bookmark != null) {
 			myThisBookBookmarks.add(0, bookmark);
@@ -219,7 +220,7 @@ public class BookmarksActivity extends TabActivity implements MenuItem.OnMenuIte
 
 	private void gotoBookmark(Bookmark bookmark) {
 		bookmark.onOpen();
-		final FBReaderApp fbreader = (FBReaderApp)FBReaderApp.Instance();
+		final FBReaderApp fbreader = (FBReaderApp)ZLApplication.Instance();
 		final long bookId = bookmark.getBookId();
 		if ((fbreader.Model == null) || (fbreader.Model.Book.getId() != bookId)) {
 			final Book book = Book.getById(bookId);
@@ -283,10 +284,12 @@ public class BookmarksActivity extends TabActivity implements MenuItem.OnMenuIte
 			return view;
 		}
 
+		@Override
 		public final boolean areAllItemsEnabled() {
 			return true;
 		}
 
+		@Override
 		public final boolean isEnabled(int position) {
 			return true;
 		}

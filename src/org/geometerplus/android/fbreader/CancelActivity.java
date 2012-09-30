@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.*;
 import android.view.*;
+import android.view.ViewGroup.LayoutParams;
 
 import org.geometerplus.zlibrary.ui.android.R;
 
@@ -74,12 +75,12 @@ public class CancelActivity extends ListActivity {
 				summaryView.setVisibility(View.VISIBLE);
 				summaryView.setText(summary);
 				titleView.setLayoutParams(new LinearLayout.LayoutParams(
-					LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+					LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT
 				));
 			} else {
 				summaryView.setVisibility(View.GONE);
 				titleView.setLayoutParams(new LinearLayout.LayoutParams(
-					LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT
+					LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT
 				));
 			}
 			return view;

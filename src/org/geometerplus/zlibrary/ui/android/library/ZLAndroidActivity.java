@@ -24,13 +24,12 @@ import java.lang.reflect.*;
 import android.app.Activity;
 import android.os.Bundle;
 import android.content.*;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.view.*;
 import android.os.PowerManager;
 
 import org.geometerplus.zlibrary.core.application.ZLApplication;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
+import org.geometerplus.zlibrary.core.library.ZLibrary;
 
 import org.geometerplus.zlibrary.ui.android.R;
 import org.geometerplus.zlibrary.ui.android.application.ZLAndroidApplicationWindow;
@@ -100,6 +99,7 @@ public abstract class ZLAndroidActivity extends Activity {
 		}
 
 		new Thread() {
+			@Override
 			public void run() {
 				ZLApplication.Instance().openFile(fileFromIntent(getIntent()), getPostponedInitAction());
 				ZLApplication.Instance().getViewWidget().repaint();
@@ -200,7 +200,7 @@ public abstract class ZLAndroidActivity extends Activity {
 	}
 
 	private static ZLAndroidLibrary getLibrary() {
-		return (ZLAndroidLibrary)ZLAndroidLibrary.Instance();
+		return (ZLAndroidLibrary)ZLibrary.Instance();
 	}
 
 	@Override
@@ -216,6 +216,7 @@ public abstract class ZLAndroidActivity extends Activity {
 	}
 
 	BroadcastReceiver myBatteryInfoReceiver = new BroadcastReceiver() {
+		@Override
 		public void onReceive(Context context, Intent intent) {
 			final int level = intent.getIntExtra("level", 100);
 			final ZLAndroidApplication application = (ZLAndroidApplication)getApplication();

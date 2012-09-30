@@ -79,6 +79,7 @@ public final class ZLTextTeXHyphenationPattern {
 		}
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		ZLTextTeXHyphenationPattern pattern = (ZLTextTeXHyphenationPattern)o;
 		int len = myLength;
@@ -95,6 +96,7 @@ public final class ZLTextTeXHyphenationPattern {
 		return true;
 	}
 
+	@Override
 	public int hashCode() {
 		int hash = myHashCode;
 		if (hash == 0) {

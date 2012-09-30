@@ -51,7 +51,7 @@ public class PopupWindow extends LinearLayout {
 
 		RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(
 			fillWidth ? ViewGroup.LayoutParams.FILL_PARENT : ViewGroup.LayoutParams.WRAP_CONTENT,
-			RelativeLayout.LayoutParams.WRAP_CONTENT
+			android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 		);
 		p.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
 		p.addRule(RelativeLayout.CENTER_HORIZONTAL);
@@ -85,6 +85,7 @@ public class PopupWindow extends LinearLayout {
 		});
 	}
 	
+	@Override
 	public void addView(View view) {
 		((LinearLayout)findViewById(R.id.tools_plate)).addView(view);
 	}

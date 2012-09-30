@@ -189,6 +189,7 @@ public final class FBReaderApp extends ZLApplication {
 		myColorProfile = null;
 	}
 
+	@Override
 	public ZLKeyBindings keyBindings() {
 		return myBindings;
 	}
@@ -361,6 +362,7 @@ public final class FBReaderApp extends ZLApplication {
 		openBook(createBookForFile(file), null, postAction);
 	}
 
+	@Override
 	public void onWindowClosing() {
 		if (Model != null && BookTextView != null) {
 			Model.Book.storePosition(BookTextView.getStartCursor());

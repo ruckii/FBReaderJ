@@ -30,6 +30,7 @@ import android.text.method.ScrollingMovementMethod;
 import org.geometerplus.zlibrary.ui.android.R;
 
 public class BugReportActivity extends Activity implements ErrorKeys {
+	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		setContentView(R.layout.bug_report_view);

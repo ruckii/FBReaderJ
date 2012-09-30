@@ -28,10 +28,7 @@ import android.widget.ListView;
 
 import org.geometerplus.zlibrary.core.options.ZLStringOption;
 import org.geometerplus.zlibrary.core.filesystem.ZLFile;
-import org.geometerplus.zlibrary.core.filesystem.ZLPhysicalFile;
 import org.geometerplus.zlibrary.core.resources.ZLResource;
-import org.geometerplus.zlibrary.core.util.MimeType;
-
 import org.geometerplus.zlibrary.ui.android.R;
 
 import org.geometerplus.fbreader.library.*;
@@ -56,7 +53,7 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
-		myDatabase = SQLiteBooksDatabase.Instance();
+		myDatabase = BooksDatabase.Instance();
 		if (myDatabase == null) {
 			myDatabase = new SQLiteBooksDatabase(this, "LIBRARY");
 		}
@@ -302,7 +299,7 @@ public class LibraryActivity extends TreeActivity implements MenuItem.OnMenuItem
 			.setTitle(book.getTitle())
 			.setMessage(boxResource.getResource("message").getValue())
 			.setIcon(0)
-			.setPositiveButton(buttonResource.getResource("yes").getValue(), new BookDeleter(book, Library.REMOVE_FROM_DISK))
+			.setPositiveButton(buttonResource.getResource("yes").getValue(), new BookDeleter(book, AbstractLibrary.REMOVE_FROM_DISK))
 			.setNegativeButton(buttonResource.getResource("no").getValue(), null)
 			.create().show();
 	}

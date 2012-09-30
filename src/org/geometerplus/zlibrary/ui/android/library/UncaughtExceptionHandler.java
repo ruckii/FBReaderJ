@@ -27,6 +27,7 @@ import android.os.Process;
 import android.net.Uri;
 
 import org.geometerplus.zlibrary.ui.android.error.BugReportActivity;
+import org.geometerplus.zlibrary.ui.android.error.ErrorKeys;
 
 public class UncaughtExceptionHandler implements java.lang.Thread.UncaughtExceptionHandler {
 	private final Context myContext;
@@ -48,7 +49,7 @@ public class UncaughtExceptionHandler implements java.lang.Thread.UncaughtExcept
 			myContext.startActivity(intent);
 		} catch (ActivityNotFoundException e) {
 			intent = new Intent(myContext, BugReportActivity.class);
-			intent.putExtra(BugReportActivity.STACKTRACE, stackTrace.toString());
+			intent.putExtra(ErrorKeys.STACKTRACE, stackTrace.toString());
 			myContext.startActivity(intent);
 		}
 

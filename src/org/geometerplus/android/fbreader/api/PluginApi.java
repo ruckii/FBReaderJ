@@ -17,6 +17,7 @@ public abstract class PluginApi {
 	public static abstract class PluginInfo extends BroadcastReceiver {
 		public static final String KEY = "actions";
 
+		@Override
 		public void onReceive(Context context, Intent intent) {
 			final List<ActionInfo> newActions = implementedActions(context);
 			if (newActions != null) {

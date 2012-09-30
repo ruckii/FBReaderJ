@@ -35,8 +35,8 @@ import android.widget.*;
 import org.geometerplus.zlibrary.ui.android.R;
 
 import org.geometerplus.zlibrary.core.image.ZLImage;
+import org.geometerplus.zlibrary.core.image.ZLImageManager;
 import org.geometerplus.zlibrary.core.image.ZLLoadableImage;
-import org.geometerplus.zlibrary.core.network.ZLNetworkException;
 import org.geometerplus.zlibrary.core.resources.ZLResource;
 import org.geometerplus.zlibrary.core.util.MimeType;
 
@@ -51,6 +51,7 @@ import org.geometerplus.fbreader.network.opds.OPDSBookItem;
 
 import org.geometerplus.android.fbreader.network.action.OpenCatalogAction;
 import org.geometerplus.android.fbreader.network.action.NetworkBookActions;
+import org.geometerplus.android.fbreader.tree.TreeActivity;
 
 import org.geometerplus.android.util.UIUtil;
 
@@ -96,7 +97,7 @@ public class NetworkBookInfoActivity extends Activity implements NetworkLibrary.
 			}
 			final NetworkLibrary library = NetworkLibrary.Instance();
 			if (!library.isInitialized()) {
-				if (SQLiteNetworkDatabase.Instance() == null) {
+				if (NetworkDatabase.Instance() == null) {
 					new SQLiteNetworkDatabase(getApplication());
 				}
 				library.initialize();
@@ -115,7 +116,7 @@ public class NetworkBookInfoActivity extends Activity implements NetworkLibrary.
 				} else {
 					final NetworkTree tree = library.getTreeByKey(
 						(NetworkTree.Key)getIntent().getSerializableExtra(
-							NetworkLibraryActivity.TREE_KEY_KEY
+							TreeActivity.TREE_KEY_KEY
 						)
 					);
 					if (tree instanceof NetworkBookTree) {
@@ -317,7 +318,7 @@ public class NetworkBookInfoActivity extends Activity implements NetworkLibrary.
 		final ZLImage cover = NetworkTree.createCover(myBook);
 		if (cover != null) {
 			ZLAndroidImageData data = null;
-			final ZLAndroidImageManager mgr = (ZLAndroidImageManager)ZLAndroidImageManager.Instance();
+			final ZLAndroidImageManager mgr = (ZLAndroidImageManager)ZLImageManager.Instance();
 			if (cover instanceof ZLLoadableImage) {
 				final ZLLoadableImage img = (ZLLoadableImage)cover;
 				img.startSynchronization(new Runnable() {

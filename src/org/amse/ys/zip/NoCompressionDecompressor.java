@@ -13,7 +13,8 @@ public class NoCompressionDecompressor extends Decompressor {
         myStream = is;
     }
 
-    public int read(byte b[], int off, int len) throws IOException {
+    @Override
+	public int read(byte b[], int off, int len) throws IOException {
         int i = 0;
         for (; i < len; ++i) {
             int value = read();
@@ -27,7 +28,8 @@ public class NoCompressionDecompressor extends Decompressor {
         return (i > 0) ? i : -1;
     }
 
-    public int read() throws IOException {
+    @Override
+	public int read() throws IOException {
         if (myCurrentPosition < myHeader.CompressedSize) {
             myCurrentPosition++;
             return myStream.read();
@@ -36,7 +38,8 @@ public class NoCompressionDecompressor extends Decompressor {
         }
     }
     
-    public int available() throws IOException {
+    @Override
+	public int available() throws IOException {
         return (myHeader.UncompressedSize - myCurrentPosition);
     }
 }

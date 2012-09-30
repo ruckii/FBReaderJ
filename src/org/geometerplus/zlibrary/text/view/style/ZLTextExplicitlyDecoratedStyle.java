@@ -34,12 +34,14 @@ public class ZLTextExplicitlyDecoratedStyle extends ZLTextStyle implements ZLTex
 		myEntry = entry;
 	}
 
+	@Override
 	public String getFontFamily() {
 		if (myEntry.isFeatureSupported(FONT_FAMILY)) {
 			// TODO: implement
 		}
 		return Base.getFontFamily();
 	}
+	@Override
 	public int getFontSize(ZLTextMetrics metrics) {
 		if (myEntry.isFeatureSupported(FONT_STYLE_MODIFIER)) {
 			if (myEntry.getFontModifier(FONT_MODIFIER_INHERIT) == ZLBoolean3.B3_TRUE) {
@@ -58,6 +60,7 @@ public class ZLTextExplicitlyDecoratedStyle extends ZLTextStyle implements ZLTex
 		return Base.getFontSize(metrics);
 	}
 
+	@Override
 	public boolean isBold() {
 		switch (myEntry.getFontModifier(FONT_MODIFIER_BOLD)) {
 			case B3_TRUE:
@@ -68,6 +71,7 @@ public class ZLTextExplicitlyDecoratedStyle extends ZLTextStyle implements ZLTex
 				return Base.isBold();
 		}
 	}
+	@Override
 	public boolean isItalic() {
 		switch (myEntry.getFontModifier(FONT_MODIFIER_ITALIC)) {
 			case B3_TRUE:
@@ -78,6 +82,7 @@ public class ZLTextExplicitlyDecoratedStyle extends ZLTextStyle implements ZLTex
 				return Base.isItalic();
 		}
 	}
+	@Override
 	public boolean isUnderline() {
 		switch (myEntry.getFontModifier(FONT_MODIFIER_UNDERLINED)) {
 			case B3_TRUE:
@@ -88,6 +93,7 @@ public class ZLTextExplicitlyDecoratedStyle extends ZLTextStyle implements ZLTex
 				return Base.isUnderline();
 		}
 	}
+	@Override
 	public boolean isStrikeThrough() {
 		switch (myEntry.getFontModifier(FONT_MODIFIER_STRIKEDTHROUGH)) {
 			case B3_TRUE:
@@ -99,34 +105,42 @@ public class ZLTextExplicitlyDecoratedStyle extends ZLTextStyle implements ZLTex
 		}
 	}
 
+	@Override
 	public int getLeftIndent() {
 		// TODO: implement
 		return Base.getLeftIndent();
 	}
+	@Override
 	public int getRightIndent() {
 		// TODO: implement
 		return Base.getRightIndent();
 	}
+	@Override
 	public int getFirstLineIndentDelta() {
 		// TODO: implement
 		return Base.getFirstLineIndentDelta();
 	}
+	@Override
 	public int getLineSpacePercent() {
 		// TODO: implement
 		return Base.getLineSpacePercent();
 	}
+	@Override
 	public int getVerticalShift() {
 		// TODO: implement
 		return Base.getVerticalShift();
 	}
+	@Override
 	public int getSpaceBefore() {
 		// TODO: implement
 		return Base.getSpaceBefore();
 	}
+	@Override
 	public int getSpaceAfter() {
 		// TODO: implement
 		return Base.getSpaceAfter();
 	}
+	@Override
 	public byte getAlignment() {
 		return
 			myEntry.isFeatureSupported(ALIGNMENT_TYPE)
@@ -134,6 +148,7 @@ public class ZLTextExplicitlyDecoratedStyle extends ZLTextStyle implements ZLTex
 				: Base.getAlignment();
 	}
 
+	@Override
 	public boolean allowHyphenations() {
 		// TODO: implement
 		return Base.allowHyphenations();

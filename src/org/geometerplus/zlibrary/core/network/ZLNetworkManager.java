@@ -59,6 +59,7 @@ public class ZLNetworkManager {
 			myScope = scope;
 		}
 
+		@Override
 		public boolean equals(Object obj) {
 			if (this == obj) {
 				return true;
@@ -81,6 +82,7 @@ public class ZLNetworkManager {
 				ZLMiscUtil.equals(myScope.getRealm(), scope.getRealm());
 		}
 
+		@Override
 		public int hashCode() {
 			if (myScope == null) {
 				return 0;
@@ -434,6 +436,7 @@ public class ZLNetworkManager {
 
 	public final void downloadToFile(String url, String sslCertificate, final File outFile, final int bufferSize) throws ZLNetworkException {
 		perform(new ZLNetworkRequest(url, sslCertificate, null) {
+			@Override
 			public void handleStream(InputStream inputStream, int length) throws IOException, ZLNetworkException {
 				OutputStream outStream = new FileOutputStream(outFile);
 				try {

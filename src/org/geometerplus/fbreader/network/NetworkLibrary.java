@@ -463,7 +463,7 @@ public class NetworkLibrary {
 
 	public void addCustomLink(ICustomNetworkLink link) {
 		final int id = link.getId();
-		if (id == ICustomNetworkLink.INVALID_ID) {
+		if (id == INetworkLink.INVALID_ID) {
 			myLinks.add(link);
 		} else {
 			synchronized (myLinks) {

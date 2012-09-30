@@ -60,7 +60,6 @@ public class TipsActivity extends Activity {
 				(Button)findViewById(R.id.tip_buttons).findViewById(R.id.ok_button);
 			yesButton.setText(buttonResource.getResource("yes").getValue());
 			yesButton.setOnClickListener(new View.OnClickListener() {
-				@Override
 				public void onClick(View v) {
 					myManager.TipsAreInitializedOption.setValue(true);
 					myManager.ShowTipsOption.setValue(true);
@@ -73,7 +72,6 @@ public class TipsActivity extends Activity {
 				(Button)findViewById(R.id.tip_buttons).findViewById(R.id.cancel_button);
 			noButton.setText(buttonResource.getResource("no").getValue());
 			noButton.setOnClickListener(new View.OnClickListener() {
-				@Override
 				public void onClick(View v) {
 					myManager.TipsAreInitializedOption.setValue(true);
 					myManager.ShowTipsOption.setValue(false);
@@ -87,7 +85,6 @@ public class TipsActivity extends Activity {
 				(Button)findViewById(R.id.tip_buttons).findViewById(R.id.ok_button);
 			okButton.setText(buttonResource.getResource("ok").getValue());
 			okButton.setOnClickListener(new View.OnClickListener() {
-				@Override
 				public void onClick(View v) {
 					myManager.ShowTipsOption.setValue(!checkBox.isChecked());
 					finish();
@@ -98,7 +95,6 @@ public class TipsActivity extends Activity {
 				(Button)findViewById(R.id.tip_buttons).findViewById(R.id.cancel_button);
 			nextTipButton.setText(resource.getResource("more").getValue());
 			nextTipButton.setOnClickListener(new View.OnClickListener() {
-				@Override
 				public void onClick(View v) {
 					showTip(nextTipButton);
 				}

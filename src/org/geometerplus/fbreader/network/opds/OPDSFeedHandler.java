@@ -74,9 +74,9 @@ class OPDSFeedHandler extends AbstractOPDSFeedHandler implements OPDSConstants {
 				}
 			}
 			if ("series".equals(feed.ViewType)) {
-				myCatalog.setFlags(myCatalog.getFlags() & ~OPDSCatalogItem.FLAGS_GROUP);
+				myCatalog.setFlags(myCatalog.getFlags() & ~NetworkCatalogItem.FLAGS_GROUP);
 			} else if ("authors".equals(feed.ViewType)) {
-				myCatalog.setFlags(myCatalog.getFlags() & ~OPDSCatalogItem.FLAG_SHOW_AUTHOR);
+				myCatalog.setFlags(myCatalog.getFlags() & ~NetworkCatalogItem.FLAG_SHOW_AUTHOR);
 			}
 		} else {
 			final OPDSNetworkLink opdsLink = (OPDSNetworkLink)myData.Link;
