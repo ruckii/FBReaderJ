@@ -333,4 +333,29 @@ public final class ZLAndroidPaintContext extends ZLPaintContext {
 		}
 		myCanvas.drawRect(x0, y0, x1 + 1, y1 + 1, myFillPaint);
 	}
+
+	@Override
+	public void drawRoundRect(int x0, int y0, int x1, int y1, int r0, int r1) {
+		final Canvas canvas = myCanvas;
+		final Paint paint = myLinePaint;
+		final RectF rect = new RectF();
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setAntiAlias(true);
+		rect.set((float) (x0 - 0.5), (float) (y0 - 0.5), (float) (x1 + 0.5), (float) (y1 - 0.5));
+		canvas.drawRoundRect(rect, r0, r1, paint);
+		paint.setAntiAlias(false);
+	}
+	@Override
+	public void fillRoundRect(int x0, int y0, int x1, int y1, int r0, int r1) {
+		final Canvas canvas = myCanvas;
+		final Paint paint = myFillPaint;
+		final RectF rect = new RectF();
+		paint.setStyle(Paint.Style.FILL);
+		paint.setAntiAlias(true);
+		rect.set((float) (x0 - 0.5), y0, (float) (x1 - 0.5), y1);
+		canvas.drawRoundRect(rect, r0, r1, paint);
+		paint.setAntiAlias(false);
+		//paint.setStyle(p0 == 0 ? Paint.Style.FILL : Paint.Style.STROKE);
+		//paint.setColor(c0 == 0 ? Color.rgb(175, 238, 250) : Color.rgb(30, 144, 255));
+	}
 }

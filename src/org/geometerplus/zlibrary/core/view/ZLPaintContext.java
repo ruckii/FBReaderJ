@@ -174,4 +174,6 @@ abstract public class ZLPaintContext {
 	abstract public void drawPolygonalLine(int[] xs, int ys[]);
 	abstract public void fillPolygon(int[] xs, int[] ys);
 	abstract public void drawOutline(int[] xs, int ys[]);
+	abstract public void drawRoundRect(int x0, int y0, int x1, int y1, int r0, int r1);
+	abstract public void fillRoundRect(int x0, int y0, int x1, int y1, int r0, int r1);
 }

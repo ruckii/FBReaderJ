@@ -62,6 +62,8 @@ public class ColorProfile {
 	public final ZLColorOption HyperlinkTextOption;
 	public final ZLColorOption VisitedHyperlinkTextOption;
 	public final ZLColorOption FooterFillOption;
+	public final ZLColorOption GaugeStrokeOption;
+	public final ZLColorOption GaugeFillOption;
 
 	private ColorProfile(String name, ColorProfile base) {
 		this(name);
@@ -99,6 +101,10 @@ public class ColorProfile {
 				createOption(name, "VisitedHyperlink", 200, 139, 255);
 			FooterFillOption =
 				createOption(name, "FooterFillOption", 85, 85, 85);
+			GaugeStrokeOption =
+					createOption(name, "GaugeStrokeOption", 0, 0, 0);
+			GaugeFillOption =
+					createOption(name, "GaugeFillOption", 255, 0, 0);
 		} else {
 			WallpaperOption =
 				new ZLStringOption("Colors", name + ":Wallpaper", "wallpapers/sepia.jpg");
@@ -118,6 +124,10 @@ public class ColorProfile {
 				createOption(name, "VisitedHyperlink", 200, 139, 255);
 			FooterFillOption =
 				createOption(name, "FooterFillOption", 170, 170, 170);
+			GaugeStrokeOption =
+					createOption(name, "GaugeStrokeOption", 30, 144, 255);
+			GaugeFillOption =
+					createOption(name, "GaugeFillOption", 175, 238, 250);
 		}
 	}
 }

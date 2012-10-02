@@ -29,10 +29,13 @@ import org.geometerplus.zlibrary.core.filesystem.ZLResourceFile;
 
 import org.geometerplus.zlibrary.text.model.ZLTextModel;
 import org.geometerplus.zlibrary.text.view.*;
+import org.geometerplus.zlibrary.ui.android.util.ZLAndroidColorUtil;
 
 import org.geometerplus.fbreader.bookmodel.BookModel;
 import org.geometerplus.fbreader.bookmodel.FBHyperlinkType;
 import org.geometerplus.fbreader.bookmodel.TOCTree;
+
+import android.graphics.Color;
 
 public final class FBView extends ZLTextView {
 	private FBReaderApp myReader;
@@ -485,9 +488,12 @@ public final class FBView extends ZLTextView {
 			// TODO: separate color option for footer color
 			final ZLColor fgColor = getTextColor(ZLTextHyperlink.NO_LINK);
 			final ZLColor fillColor = reader.getColorProfile().FooterFillOption.getValue();
-
+			final ZLColor gaugeStrokeColor = reader.getColorProfile().GaugeStrokeOption.getValue();
+			final ZLColor gaugeFillColor = reader.getColorProfile().GaugeFillOption.getValue();
+			
 			final int left = getLeftMargin();
 			final int right = context.getWidth() - getRightMargin();
+			
 			final int height = getHeight();
 			final int lineWidth = height <= 10 ? 1 : 2;
 			final int delta = height <= 10 ? 0 : 1;
@@ -528,20 +534,16 @@ public final class FBView extends ZLTextView {
 
 			// draw gauge
 			final int gaugeRight = right - (infoWidth == 0 ? 0 : infoWidth + 10);
-			myGaugeWidth = gaugeRight - left - 2 * lineWidth;
-
-			context.setLineColor(fgColor);
-			context.setLineWidth(lineWidth);
-			context.drawLine(left, lineWidth, left, height - lineWidth);
-			context.drawLine(left, height - lineWidth, gaugeRight, height - lineWidth);
-			context.drawLine(gaugeRight, height - lineWidth, gaugeRight, lineWidth);
-			context.drawLine(gaugeRight, lineWidth, left, lineWidth);
+			myGaugeWidth = gaugeRight - left;
+			context.setFillColor(gaugeFillColor);
+			context.fillRoundRect(left, height / 2 - 5, gaugeRight, height / 2 + 5, 5, 5);
+			context.setLineColor(gaugeStrokeColor);
+			context.drawRoundRect(left, height / 2 - 5, gaugeRight, height / 2 + 5, 5, 5);
 
 			final int gaugeInternalRight =
-				left + lineWidth + (int)(1.0 * myGaugeWidth * pagePosition.Current / pagePosition.Total);
-
-			context.setFillColor(fillColor);
-			context.fillRectangle(left + 1, height - 2 * lineWidth, gaugeInternalRight, lineWidth + 1);
+				left + (int)(1.0 * myGaugeWidth * pagePosition.Current / pagePosition.Total);
+			context.setFillColor(gaugeStrokeColor);
+			context.fillRoundRect(left + 3, height / 2 - 3, gaugeInternalRight - 3, height / 2 + 2, 3, 3);
 
 			if (reader.FooterShowTOCMarksOption.getValue()) {
 				if (myTOCMarks == null) {
@@ -557,6 +559,7 @@ public final class FBView extends ZLTextView {
 						context.drawLine(xCoord, height - lineWidth, xCoord, lineWidth);
 					}
 				}
+				
 			}
 		}
 

@@ -116,4 +116,10 @@ final class DummyPaintContext extends ZLPaintContext {
 	@Override
 	public void drawOutline(int[] xs, int ys[]) {
 	}
+	@Override
+	public void drawRoundRect(int x0, int y0, int x1, int y1, int r0, int r1) {
+	}
+	@Override
+	public void fillRoundRect(int x0, int y0, int x1, int y1, int r0, int r1) {
+	}	
 }
